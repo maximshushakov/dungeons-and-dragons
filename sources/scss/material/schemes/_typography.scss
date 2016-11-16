@@ -1,0 +1,29 @@
+%typography-header {
+    font-size: 45px;
+    line-height: 63px;
+    color: #000//$colors-text-header;
+}
+
+%typography-headline {
+    font-size: 24px;
+    line-height: 34px;
+    color: $colors-text-accent;
+}
+
+%typography-subheading {
+    font-size: 16px;
+    line-height: 24px;
+    color: $colors-text-accent;
+}
+
+%typography-caption {
+    font-size: 13px;
+    line-height: 24px;
+    color: $colors-text-caption;
+}
+
+%typography-body {
+    font-size: 15px;
+    line-height: 24px;
+    color: $colors-text-main;
+}

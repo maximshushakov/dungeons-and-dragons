@@ -1,0 +1,13 @@
+.-debug-grid-main {
+    background-image:
+            linear-gradient(to bottom, rgba(#f00, .5) 1px, transparent 1px),
+            linear-gradient(to right, rgba(#f00, .5) 1px, transparent 1px);
+    background-size: 8px 8px;
+}
+
+.-debug-grid-typography {
+    background-image:
+            linear-gradient(to bottom, rgba(#f00, .5) 1px, transparent 1px);
+    background-size: 4px 4px;
+    background-clip: content-box;
+}
