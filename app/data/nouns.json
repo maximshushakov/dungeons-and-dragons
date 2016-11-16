@@ -1,0 +1,164 @@
+[
+	{
+		"kanji": "秋",
+		"kana": "あき",
+		"meaning": "autumn, fall",
+		"group": "seasons, moments"
+	},
+	{
+		"kanji": "夏",
+		"kana": "なつ",
+		"meaning": "summer",
+		"group": "seasons, moments"
+	},
+	{
+		"kanji": "春",
+		"kana": "はる",
+		"meaning": "spring",
+		"group": "seasons, moments"
+	},
+	{
+		"kanji": "冬",
+		"kana": "ふゆ",
+		"meaning": "winter",
+		"group": "seasons, moments"
+	},
+	{
+		"kanji": "一月",
+		"kana": "いちがつ",
+		"meaning": "January",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "二月",
+		"kana": "にがつ",
+		"meaning": "February",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "三月",
+		"kana": "さんがつ",
+		"meaning": "March",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "四月",
+		"kana": "しがつ",
+		"meaning": "April",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "五月",
+		"kana": "ごがつ",
+		"meaning": "May",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "六月",
+		"kana": "ろくがつ",
+		"meaning": "June",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "七月",
+		"kana": "しちがつ",
+		"meaning": "July",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "八月",
+		"kana": "はちがつ",
+		"meaning": "August",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "九月",
+		"kana": "くがつ",
+		"meaning": "September",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "十月",
+		"kana": "じゅうがつ",
+		"meaning": "October",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "十一月",
+		"kana": "じゅういちがつ",
+		"meaning": "November",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "十二月",
+		"kana": "じゅうにがつ",
+		"meaning": "December",
+		"group": "months, moments"
+	},
+	{
+		"kanji": "今月",
+		"kana": "こんげつ",
+		"meaning": "this month",
+		"group": "months, moments, this..."
+	},
+	{
+		"kanji": "先月",
+		"kana": "せんげつ",
+		"meaning": "last month",
+		"group": "months, moments, last..."
+	},
+	{
+		"kanji": "毎月",
+		"kana": "まいつき, まいげつ",
+		"meaning": "every month",
+		"group": "months, moments, every..."
+	},
+	{
+		"kanji": "来月",
+		"kana": "らいげつ",
+		"meaning": "next month",
+		"group": "months, moments, next..."
+	},
+	{
+		"kanji": "朝",
+		"kana": "あさ",
+		"meaning": "morning",
+		"group": "part of day, moments"
+	},
+	{
+		"kanji": "今朝",
+		"kana": "けさ",
+		"meaning": "this morning",
+		"group": "part of day, moments, this..."
+	},
+	{
+		"kanji": "毎朝",
+		"kana": "まいあさ",
+		"meaning": "every morning",
+		"group": "part of day, moments, every..."
+	},
+	{
+		"kanji": "晩",
+		"kana": "ばん",
+		"meaning": "evening",
+		"group": "part of day, moments"
+	},
+	{
+		"kanji": "夜",
+		"kana": "よる",
+		"meaning": "evening, night",
+		"group": "part of day, moments"
+	},
+	{
+		"kanji": "毎晩",
+		"kana": "まいばん",
+		"meaning": "every evening",
+		"group": "part of day, moments, every..."
+	},
+	{
+		"kanji": "今晩",
+		"kana": "こんばん",
+		"meaning": "this evening",
+		"group": "part of day, moments, this..."
+	}
+]

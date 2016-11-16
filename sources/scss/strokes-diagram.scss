@@ -1,0 +1,36 @@
+.stroke_order_diagram--outer_container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+.stroke_order_diagram--guide_line {
+    fill: none;
+    stroke: #ddd;
+    stroke-dasharray: 5, 5;
+    stroke-linecap: square;
+    stroke-width: 2;
+}
+.stroke_order_diagram--bounding_box {
+    fill: none;
+    stroke: #ddd;
+    stroke-linecap: square;
+    stroke-width: 2;
+}
+.stroke_order_diagram--current_path {
+    fill: none;
+    stroke: #000;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+}
+.stroke_order_diagram--existing_path {
+    fill: none;
+    stroke: #aaa;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 3;
+}
+.stroke_order_diagram--path_start {
+    fill: rgba(255, 0, 0, 0.7);
+    stroke: none;
+}
