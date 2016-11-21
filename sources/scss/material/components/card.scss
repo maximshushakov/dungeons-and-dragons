@@ -31,3 +31,12 @@
         @extend %typography-caption;
     }
 }
+
+@media (min-width: 481px) {
+    .viewport { max-width: none; }
+
+    .card {
+        display: inline-block;
+        width: calc(50% - 16px);
+    }
+}

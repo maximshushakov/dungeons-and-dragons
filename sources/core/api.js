@@ -1,12 +1,9 @@
 var url = '/app/data/';
 
 class API {
-	/*static get({ type = 'simple' }) {
+	static get(type) {
 		return API.ajax({ url: url + type + '.json' });
 	}
-
-	static set({ type = 'simple' }) {
-	}*/
 
 	static shuffle(array) {
 		var i = 0,

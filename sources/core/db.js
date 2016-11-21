@@ -1,3 +1,5 @@
+import api from "./api";
+
 var db;
 
 class DB {
@@ -16,24 +18,31 @@ class DB {
 
         request.onupgradeneeded = (event) => { 
             db = event.target.result;
-            var store = db.createObjectStore('cards', { autoIncrement : true });
-            store.add({ word: '上', reading: 'うえ', meaning: 'above; up; over; top', example: '本は机の上です' });
-            store.add({ word: '下', reading: 'した', meaning: 'below; down; under; bottom', example: '猫は机の下です' });
-            store.add({ word: '前', reading: 'まえ', meaning: 'in front (of); before', example: 'あの人はあの家の前です。' });
-            store.add({ word: '後ろ', reading: 'うしろ', meaning: 'back; behind', example: '私の家の後ろです。' });
+            db.createObjectStore('cards', { autoIncrement : true });
         };
 
         return promise;
     }
 
-    static get(store, key = null) {
+    static get() { //store, key = null) {
         var transaction = db.transaction(['cards'], 'readwrite');
-        var store = transaction.objectStore(store);
+        var store = transaction.objectStore('cards');
         var promise = new Promise(function(resolve, reject) {
-            //transaction = (key) ? store.get(key) : store.getALL();
-            transaction.objectStore('cards').getAll().onsuccess = (event) => resolve(event.target.result);
-            //transaction.onerror = (event) => reject(new Error(transaction.error));
-            db.close();
+            var request = store.getAll();
+            request.onsuccess = (event) => resolve(event.target.result);
+            request.onerror = (event) => reject(new Error(transaction.error));
+        });
+
+        return promise;
+    }
+
+    static add(data) { //store, key = null) {
+        var transaction = db.transaction(['cards'], 'readwrite');
+        var store = transaction.objectStore('cards');
+        var promise = new Promise(function(resolve, reject) {
+            data.forEach(card => store.add(card));
+            transaction.onsuccess = (event) => resolve(event.target.result);
+            transaction.onerror = (event) => reject(new Error(transaction.error));
         });
 
         return promise;

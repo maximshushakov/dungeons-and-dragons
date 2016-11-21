@@ -1,41 +1,28 @@
 @import "material/schemes/colors";
 @import "material/schemes/typography";
+@import "material/schemes/metrics";
 
 @import "material/animations";
 
+@import "material/components/viewport";
 @import "material/components/card";
 @import "material/components/toolbar";
 
 
-//@import "debug";
-
 //
 // Main Styles
-
+html { height: 100%; }
 body {
-    background-color: #FAFAFA; //#F2E9E1;
+    background-color: $colors-background;
     -webkit-font-smoothing: antialiased;
     font-family: "Noto Sans", Roboto, serif;
+    height: 100%;
     margin: 0;
 
     * {
         margin: 0;
         padding: 0;
     }
-}
-
-.list {
-    margin: auto;
-    max-width: 464px;
-    margin-top: 64px;
-}
-
-.toolbar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
 }
 
 /*input {

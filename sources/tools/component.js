@@ -24,7 +24,7 @@ class Component {
     static render(component, element = null) {
         if (typeof component !== 'string') {
             if (element) element.appendChild(component);
-            return element || component;
+            return component;
         }
         else {
             let fragment = document.createDocumentFragment();
@@ -38,7 +38,7 @@ class Component {
 
             if (element) element.appendChild(fragment);
 
-            return element || fragment;
+            return fragment;
         }
     }
 }

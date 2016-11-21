@@ -1,5 +1,5 @@
 .toolbar {
-	height: 56px;
+	height: $toolbar-height-portrait;
 	padding: 0 16px;
 	background-color: $colors-primary;
 	box-shadow: 0 3px 6px $colors-shadow;
@@ -9,4 +9,12 @@
 		font-size: 20px;
 		line-height: 52px;
 	}
+}
+
+.toolbar.-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
 }
