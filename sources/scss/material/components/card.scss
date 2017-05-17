@@ -30,13 +30,47 @@
     ._caption {
         @extend %typography-caption;
     }
+
+    ._textfield {
+        margin-top: 16px;
+    }
+
+    ._textbox {
+        @extend %typography-input;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0 2px 4px;
+        border: none;
+        border-bottom: 2px solid $colors-shadow;
+        appearance: none;
+        outline: none;
+        background: none;
+        transition: border-color .2s;
+
+        &:focus {
+            border-color: $colors-primary;
+        }
+
+        &.-success {
+            border-color: $colors-success;
+        }
+
+        &.-error {
+            border-color: $colors-error;
+        }
+    }
 }
 
 @media (min-width: 481px) {
-    .viewport { max-width: none; }
-
     .card {
         display: inline-block;
         width: calc(50% - 16px);
+    }
+}
+
+@media (min-width: 800px) {
+    .card {
+        display: inline-block;
+        width: calc(33.333% - 16px);
     }
 }

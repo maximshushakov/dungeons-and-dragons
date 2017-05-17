@@ -1,7 +1,3 @@
-%viewport-animation-fade-in {
-    animation: fade .4s;
-}
-
 %viewport-animation-fade-out {
     animation: fade .4s; 
     animation-direction: reverse; 
@@ -11,9 +7,8 @@
 .viewport {
     position: relative;
     top: $toolbar-height-portrait;
-    min-height: calc(100% - #{$toolbar-height-portrait});
-    max-width: 468px;
-    margin: auto;
+    height: calc(100% - #{$toolbar-height-portrait});
+    overflow: auto;
 
     &::before {
         content: "";
@@ -29,26 +24,13 @@
 }
 
 .viewport.-state-loading {
-    &::before {
+    &::before,
+    ~ .viewport-icons.-preloader {
         display: block;
-        @extend %viewport-animation-fade-in;
-    }
-
-    ~ .viewport-icons.-preloader { display: block; }
-}
-
-.viewport.-state-loading-completed {
-    &::before { 
-        display: block;
-        @extend %viewport-animation-fade-out;
-        animation-delay: .4s;
-    }
-
-    ~ .viewport-icons.-preloader { 
-        display: block;
-        @extend %viewport-animation-fade-out; 
+        /* animation: fade .4s; */
     }
 }
+
 
 .viewport-icons { display: none; }
 

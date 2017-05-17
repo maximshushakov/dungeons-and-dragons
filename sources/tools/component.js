@@ -1,15 +1,12 @@
+import Binder from "./binder";
+
 class Component {
-    constructor(store, data = {}, extend = {}) {
+    constructor(data = {}, extend = {}) {
         Object.assign(this, extend);
-        this.store = store;
         this.data = data;
-
         this.element = Component.render(this.render());
-        this.element = this.element.children.item(0);
-
+        this.bindings = new Binder(this.element);
         this.init();
-
-        return this.element;
     }
 
     init() {
@@ -23,7 +20,7 @@ class Component {
 
     static render(component, element = null) {
         if (typeof component !== 'string') {
-            if (element) element.appendChild(component);
+            if (element) element.appendChild(component.element);
             return component;
         }
         else {

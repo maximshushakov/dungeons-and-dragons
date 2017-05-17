@@ -1,10 +1,8 @@
-import api from "./api";
-
 var db;
 
 class DB {
     static open() {
-        var request = indexedDB.open('cards', 2);
+        var request = indexedDB.open('cards', 1);
 
         var promise = new Promise((resolve, reject) => {
             request.onsuccess = (event) => {
@@ -18,15 +16,20 @@ class DB {
 
         request.onupgradeneeded = (event) => { 
             db = event.target.result;
-            db.createObjectStore('cards', { autoIncrement : true });
+            /*** 
+                Structure:
+                words -> { word, reading, meaning }
+            */
+            var store = db.createObjectStore('words', { autoIncrement : true });
+            store.createIndex('word', 'word', { autoIncrement : true });
         };
 
         return promise;
     }
 
-    static get() { //store, key = null) {
-        var transaction = db.transaction(['cards'], 'readwrite');
-        var store = transaction.objectStore('cards');
+    static get(storeName) { //store, key = null) {
+        var transaction = db.transaction([storeName], 'readwrite');
+        var store = transaction.objectStore(storeName);
         var promise = new Promise(function(resolve, reject) {
             var request = store.getAll();
             request.onsuccess = (event) => resolve(event.target.result);
@@ -36,11 +39,13 @@ class DB {
         return promise;
     }
 
-    static add(data) { //store, key = null) {
-        var transaction = db.transaction(['cards'], 'readwrite');
-        var store = transaction.objectStore('cards');
+    static add(storeName, data) { //store, key = null) {
+        var transaction = db.transaction([storeName], 'readwrite');
+        var store = transaction.objectStore(storeName);
         var promise = new Promise(function(resolve, reject) {
-            data.forEach(card => store.add(card));
+            data.forEach(item => {
+                var request = store.add(item);
+            });
             transaction.onsuccess = (event) => resolve(event.target.result);
             transaction.onerror = (event) => reject(new Error(transaction.error));
         });

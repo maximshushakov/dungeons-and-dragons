@@ -6,41 +6,53 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
 	entry: [
-		"./sources/app.js",
+		"./sources/app.js"
 	],
 
 	output: {
-		filename: "./app/js/app.js",
-		pathinfo: true
+		path: path.resolve(__dirname, 'app/js/'),
+		publicPath: '/js',
+        filename: 'app.js',
+        pathinfo: true,
 	},
 
 	resolve: {
-		root: path.resolve(__dirname, 'sources'),
+		modules: [path.resolve(__dirname, 'sources'), 'node_modules'],
 	},
 
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /\.js(x?)$/,
 				exclude: /node_modules/,
-				loader: "babel?presets=es2015",
+				loader: "babel-loader",
 			},
 			{
 				test: /\.scss/,
-				loader: ExtractTextPlugin.extract("style", "css!sass?outputStyle=expanded")
+				use: ExtractTextPlugin.extract({ 
+					fallback: 'style-loader', 
+					use: [
+						'css-loader',
+						'sass-loader',
+					]
+				})
 				//loader: 'style!css!sass?outputStyle=expanded'
 			},
 		],
 	},
 	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
 		new ExtractTextPlugin('./app/css/styles.css'),
 		new webpack.DefinePlugin({
 			'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
 		}),
 	],
 
-	postcss: function() {
+	devServer: {
+	  contentBase: path.join(__dirname, "app"),
+	  port: 8080
+	},
+
+	/*postcss: function() {
 		return [
 			autoprefixer({
 				browsers: [
@@ -51,5 +63,5 @@ module.exports = {
 				]
 			})
 		];
-	},
+	},*/
 }

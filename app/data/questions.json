@@ -1,0 +1,17 @@
+[
+	{ "words": "to speak, slow", "answer": "ゆっくり話してください", "question": "〜てください" },
+	{ "words": "to use", "answer": "使ってください", "question": "〜てください" },
+	{ "words": "kanji, to teach", "answer": "漢字を教えてください", "question": "〜てください" },
+	{ "words": "book, to return", "answer": "本を返してください", "question": "〜てください" },
+	{ "words": "me, with, to go", "answer": "私と行ってください", "question": "〜てください" },
+	{ "words": "phone, to call", "answer": "電話をかけてください", "question": "〜てください" },
+	{ "words": "friend, to bring", "answer": "友達を連れてきてください", "question": "〜てください" },
+	{ "words": "book, to bring", "answer": "本を持ってきてください", "question": "〜てください" },
+	{ "words": "electricity, to turn off", "answer": "電気を消してください", "question": "〜てください" },
+	{ "words": "window, to close", "answer": "窓を閉めてください", "question": "〜てください" },
+	{ "words": "window, to open", "answer": "窓を開けてください", "question": "〜てください" },
+	{ "words": "homework, to help", "answer": "宿題を手伝ってください", "question": "〜てください" },
+	{ "words": "textbook, to borrow", "answer": "教科書を借りてください", "question": "〜てください" },
+
+	{ "words": "to help", "answer": "手伝いましょうか", "question": "〜ましょうか" }
+]

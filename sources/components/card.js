@@ -9,16 +9,15 @@ class Card extends Component {
 
     render() {
         return (
-            `<div class="card">
+            `<div class="card" data-bind="class:status">
                 <div class="_header">
-                    <div class="_title">${this.data.kanji}</div>
+                    <div class="_title" data-bind="text:word"></div>
                 </div>
                 <div class="_content">
-                    <div class="_headline">${this.data.kana}</div>
-                    <div class="_subheading">${this.data.meaning}</div>
-                    <div class="_description">
-                       ${this.data.group}
-                    </div>
+                    <div class="_headline" data-bind="text:reading"></div>
+                    <div class="_subheading" data-bind="text:meaning"></div>
+                    <div class="_description" data-bind="text:meaning"></div>
+                    ${this.data.title}
                 </div>
             </div>`
         );
