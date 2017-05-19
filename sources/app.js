@@ -14,7 +14,7 @@ var viewport = {
 	element: document.body.querySelector('.viewport')
 }
 
-//viewport.changeState('loading');
+viewport.element.classList.add('-state-loading');
 
 //DB.open().then(function() {
 	/*Helper.ajax({ url: 'data/nouns.json' }).then(data => {
@@ -62,8 +62,22 @@ function execute(generator, value) {
   }
 }*/
 
-//Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
+Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
 	//data.forEach(data => Component.render(new Question(null, [data]), viewport.element));
+	data = Array.from(data); 
+	Component.render(new Question(data), viewport.element);
+	viewport.element.classList.remove('-state-loading');
+	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
+	//let card = new Card(...data);
+	//card.setData({word: 'word1', reading: 'reading1', meaning: 'meaning1', status: '-default'});
+	//card.setData({status: '-default1'});
+	//data.forEach(data => Component.render(card, viewport.element));
+});
+
+
+//Helper.ajax({ url: '/data/questions.json' }).then(data => {
+	//data.forEach(data => 
+	//	Component.render(new Question(data), viewport.element)//);
 	//data = Array.from(data); 
 	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
 	//let card = new Card(...data);
@@ -71,18 +85,6 @@ function execute(generator, value) {
 	//card.setData({status: '-default1'});
 	//data.forEach(data => Component.render(card, viewport.element));
 //});
-
-
-Helper.ajax({ url: '/data/questions.json' }).then(data => {
-	//data.forEach(data => 
-		Component.render(new Question(data), viewport.element)//);
-	//data = Array.from(data); 
-	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
-	//let card = new Card(...data);
-	//card.setData({word: 'word1', reading: 'reading1', meaning: 'meaning1', status: '-default'});
-	//card.setData({status: '-default1'});
-	//data.forEach(data => Component.render(card, viewport.element));
-});
 
 
 /*if ('serviceWorker' in navigator) {
@@ -105,7 +107,7 @@ Helper.ajax({ url: '/data/questions.json' }).then(data => {
 
 
 
-class Robot {
+/*class Robot {
 	constructor() {
 		this.isHold = false;
 		this.position = 0;
@@ -144,4 +146,4 @@ class Robot {
 	}
 }
 
-console.log((new Robot()).execute('PLPLPL'))
+console.log((new Robot()).execute('PLPLPL'))*/

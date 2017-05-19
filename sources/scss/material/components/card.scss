@@ -25,6 +25,7 @@
     ._subheading {
         @extend %typography-subheading;
         margin-bottom: 16px;
+        min-height: 48px;
     }
 
     ._caption {
@@ -50,14 +51,14 @@
         &:focus {
             border-color: $colors-primary;
         }
+    }
 
-        &.-success {
-            border-color: $colors-success;
-        }
+    &.-correct ._textbox {
+        border-color: $colors-success;
+    }
 
-        &.-error {
-            border-color: $colors-error;
-        }
+    &.-incorrect ._textbox {
+        border-color: $colors-error;
     }
 }
 

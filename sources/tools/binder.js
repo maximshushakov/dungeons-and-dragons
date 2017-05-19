@@ -10,6 +10,12 @@ class Binder {
             this.bindings[data].push({ type, element, previous: null });
         });
 
+        Array.from(this.element.querySelectorAll('[data-bind-value]')).forEach(element => {
+            const data = element.dataset.bindValue;
+            if (!this.bindings[data]) this.bindings[data] = [];
+            this.bindings[data].push({ type: 'value', element, previous: null });
+        });
+
         this.setData(this.data);
     }
 
@@ -18,7 +24,7 @@ class Binder {
             if (this.bindings[key]) {
                 this.bindings[key].forEach(item => {
                 	item.previous = this.data[key];
-                	//this.render(item, data[key]);
+                	this.render(item, data[key]);
                 }); 
             }
             this.data[key] = data[key];
@@ -29,18 +35,22 @@ class Binder {
         return this.data[key];
     }
 
-    render(element, data) {
+    render(item, data) {
         if (item.type === 'text') { 
             item.element.textContent = data;
             return;
         }
         if (item.type === 'disabled') { 
-            item.element.disabled = data;
+            //item.element.disabled = data;
             return;
         }
         if (item.type === 'class') {
             if (item.previous) item.element.classList.remove(item.previous);
             if (data) item.element.classList.add(data);
+            return;
+        }
+        if (item.type === 'value') {
+            item.element.value = data;
             return;
         }
     }

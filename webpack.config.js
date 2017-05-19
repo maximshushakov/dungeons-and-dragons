@@ -29,6 +29,11 @@ module.exports = {
 			},
 			{
 				test: /\.scss/,
+				/*use: [
+					'style-loader',
+					'css-loader',
+					'sass-loader',
+				]*/
 				use: ExtractTextPlugin.extract({ 
 					fallback: 'style-loader', 
 					use: [
@@ -41,7 +46,7 @@ module.exports = {
 		],
 	},
 	plugins: [
-		new ExtractTextPlugin('./app/css/styles.css'),
+		new ExtractTextPlugin('../css/styles.css'),
 		new webpack.DefinePlugin({
 			'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
 		}),

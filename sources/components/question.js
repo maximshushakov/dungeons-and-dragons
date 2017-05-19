@@ -8,12 +8,15 @@ class Question extends Component {
         var status = '';
 
         input.addEventListener('change', (e) => {
-            status = (input.value.trim() === this.data[current].answer) ? '-correct' : '-incorrect';
+            status = (input.value.trim() === this.data[current].word) ? '-correct' : '-incorrect';
 
             this.bindings.setData({
                 status,
                 isDisable: true,
+                answer: `${this.data[current].word} [${this.data[current].reading}]`,
             });
+
+            window.responsiveVoice.speak(this.data[current].word, 'Japanese Female');
 
             setTimeout(() => {
                 current++;
@@ -24,10 +27,11 @@ class Question extends Component {
 
         const show = (index) => {
             this.bindings.setData({
-                question: this.data[index].question,
-                words: this.data[index].words,
+                question: this.data[index].meaning,
+                hint: this.data[index].hint,
                 status: '-default',
                 isDisable: false,
+                answer: '',
             });
             input.focus();
         };
@@ -37,13 +41,13 @@ class Question extends Component {
 
     render() {
         return (
-            `<div class="card" data-bind="class:status">;
+            `<div class="card" data-bind="class:status">
                 <div class="_content">
                     <div class="_headline" data-bind="text:question"></div>
-                    <div class="_subheading">Combine these words to a sentence:</div>
+                    <div class="_subheading" data-bind="text:hint"></div>
                     <div class="_description" data-bind="text:words"></div>
                     <div class="_textfield">
-                        <input data-bind="disabled:isDisable" ref='input' class="_textbox" placeholder="Your answer...">
+                        <input data-bind="disabled:isDisable" data-bind-value="answer" ref='input' class="_textbox" placeholder="Your answer...">
                     </div>
                 </div>
             </div>`
