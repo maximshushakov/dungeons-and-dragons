@@ -29,18 +29,18 @@ module.exports = {
 			},
 			{
 				test: /\.scss/,
-				/*use: [
+				use: [
 					'style-loader',
-					'css-loader',
-					'sass-loader',
-				]*/
-				use: ExtractTextPlugin.extract({ 
+					'css-loader?sourceMap',
+					'sass-loader?sourceMap',
+				]
+				/*use: ExtractTextPlugin.extract({ 
 					fallback: 'style-loader', 
 					use: [
 						'css-loader',
 						'sass-loader',
 					]
-				})
+				})*/
 				//loader: 'style!css!sass?outputStyle=expanded'
 			},
 		],

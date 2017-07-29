@@ -8,22 +8,72 @@ import DB from "core/db";
 import Helper from "core/helper";
 
 import Card from "components/card";
-import Question from "components/question";
 
-var viewport = {
+/*var viewport = {
 	element: document.body.querySelector('.viewport')
-}
+}*/
 
-viewport.element.classList.add('-state-loading');
 
-//DB.open().then(function() {
-	/*Helper.ajax({ url: 'data/nouns.json' }).then(data => {
-		DB.add('words', data);
-		data.forEach(word => {
-			Component.render(new Card(null, word), viewport.element);
-		});
+
+//viewport.element.classList.add('-state-loading');
+
+/*DB.open().then(function(db) {
+	//Promise.all([ DB.get('words'), DB.get('examples') ])
+	DB.get('words').then(words => {
+		Component.render(new Card(words[0]), viewport.element);
+		Component.render(new Card(words[1]), viewport.element);
+	});
+  
+});*/
+
+//DB.open().then(function(db) {
+	/*var examples = transaction.objectStore("examples");
+	var words = transaction.objectStore("words");*/
+	//var index = examples.index('word');
+	//index.get('勉強する').onsuccess = (e) => console.log(e.target.result);
+	//DB.get('examples').then(data => console.log(data));
+
+	/*Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/examples' }).then(data => {
+		DB.add('examples', data);
 	});*/
+
+	/*Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
+		console.log(data);
+		DB.add('words', data);
+	});*/
+
+	/*DB.get('words').then(words => {
+		var transaction = db.transaction(["examples"], "readonly");
+		var request = transaction.objectStore("examples").index("word").openCursor();
+		var index = 0;
+		request.onsuccess = function(e) {
+			var cursor = e.target.result;
+		    if (cursor) {
+		    	console.log(cursor.key);
+		    	cursor.continue()
+		    }
+		}
+	});*/
+
+	//showCards();
 //});
+
+/*Helper.post('examples', { word: '運転する', example: '運転しましょか' }).then(data => {
+	if (data.success) Helper.get('examples').then(data => console.log(data));
+	else (console.error(data.message));
+});*/
+
+/*var showCards = () => {
+	var cards = [];
+	DB.get('words').then(words => {
+		cards = words;
+		DB.get('examples').then(examples => {
+			cards[0].example = examples[0].example
+			cards.forEach(data => Component.render(new Card(data), viewport.element))
+			viewport.element.classList.remove('-state-loading');
+		});
+	});
+}*/
 
 /*function showCards(data) {
 	data.forEach(data => {
@@ -62,9 +112,10 @@ function execute(generator, value) {
   }
 }*/
 
-Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
+/*Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/examples' }).then(data => {
 	//data.forEach(data => Component.render(new Question(null, [data]), viewport.element));
 	data = Array.from(data); 
+	data = Helper.shuffle(data);
 	Component.render(new Question(data), viewport.element);
 	viewport.element.classList.remove('-state-loading');
 	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
@@ -72,7 +123,26 @@ Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
 	//card.setData({word: 'word1', reading: 'reading1', meaning: 'meaning1', status: '-default'});
 	//card.setData({status: '-default1'});
 	//data.forEach(data => Component.render(card, viewport.element));
+});*/
+
+
+
+
+/*var data = JSON.stringify({
+    "word": "勉強する",
+    "example": "日本語を勉強しています"
 });
+
+var xhr = new XMLHttpRequest();
+
+xhr.addEventListener('load', function() {
+    console.log(this.responseText);
+});
+
+xhr.open("POST", "https://cards-5d46.restdb.io/rest/examples");
+xhr.setRequestHeader("x-apikey", "5948a6725f54052560916824");
+
+xhr.send(data);*/
 
 
 //Helper.ajax({ url: '/data/questions.json' }).then(data => {

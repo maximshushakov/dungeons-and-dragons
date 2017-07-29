@@ -6,6 +6,25 @@ class Component {
         this.data = data;
         this.element = Component.render(this.render());
         this.bindings = new Binder(this.element);
+        
+        this.events = {};
+
+        Array.from(this.element.querySelectorAll('[data-on]')).forEach(element => {
+            const [ event, func ] = element.dataset.on.split(':');
+            if (!this.events[event]) this.events[event] = [];
+            this.events[event].push({ event, element, func });
+        });
+
+        this.handler = (e) => {
+            this.events[e.type].forEach(event => { console.log(event.element === e.target) });
+        };
+
+        Object.keys(this.events).forEach(event => {
+            this.element.children[0].addEventListener(event, this.handler);
+        });        
+
+        
+
         this.init();
     }
 

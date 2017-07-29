@@ -1,12 +1,10 @@
-var db;
-
 class DB {
     static open() {
-        var request = indexedDB.open('cards', 1);
+        const request = indexedDB.open('cards', 1);
 
-        var promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve, reject) => {
             request.onsuccess = (event) => {
-                db = event.target.result;
+                this._db = event.target.result;
                 resolve(event.target.result);
             }
             request.onerror = (event) => {
@@ -15,23 +13,24 @@ class DB {
         });
 
         request.onupgradeneeded = (event) => { 
-            db = event.target.result;
-            /*** 
-                Structure:
-                words -> { word, reading, meaning }
-            */
-            var store = db.createObjectStore('words', { autoIncrement : true });
-            store.createIndex('word', 'word', { autoIncrement : true });
+            // words: { _id, word, meaning, reading, hint }
+            // examples: { _id, example, word }
+
+            this._db = event.target.result;
+            const words = this._db.createObjectStore('words', { keyPath: 'word' }); 
+            const examples = this._db.createObjectStore('examples', { autoIncrement : true });
+            examples.createIndex("word", "word", { unique: false });
+            examples.createIndex("example", "example", { unique: true });
         };
 
         return promise;
     }
 
-    static get(storeName) { //store, key = null) {
-        var transaction = db.transaction([storeName], 'readwrite');
-        var store = transaction.objectStore(storeName);
-        var promise = new Promise(function(resolve, reject) {
-            var request = store.getAll();
+    static get(storeName) {
+        const transaction = this._db.transaction([storeName], 'readonly');
+        const store = transaction.objectStore(storeName);
+        const promise = new Promise(function(resolve, reject) {
+            const request = store.getAll();
             request.onsuccess = (event) => resolve(event.target.result);
             request.onerror = (event) => reject(new Error(transaction.error));
         });
@@ -39,19 +38,72 @@ class DB {
         return promise;
     }
 
-    static add(storeName, data) { //store, key = null) {
-        var transaction = db.transaction([storeName], 'readwrite');
-        var store = transaction.objectStore(storeName);
-        var promise = new Promise(function(resolve, reject) {
-            data.forEach(item => {
-                var request = store.add(item);
-            });
+    static add(storeName, data) {
+        const transaction = this._db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const promise = new Promise(function(resolve, reject) {
+            data.forEach(item => store.add(item));
             transaction.onsuccess = (event) => resolve(event.target.result);
             transaction.onerror = (event) => reject(new Error(transaction.error));
         });
 
         return promise;
     }
+
+    static update(storeName, data, _id) {
+
+    }
+
+    /*static join(...stores, key) {
+        const transaction = db.transaction(...stores);
+
+        const promise = new Promise(function(resolve, reject) {
+            transaction.objectStore("words").openCursor().onsuccess = function(event) {
+                wordsCursor = event.target.result;
+                examples = [];
+                attemptWalk();
+            }
+
+            transaction.oncomplete = () => resolve(data);
+        });
+
+        return promise;
+
+  var cards = [];
+  
+ 
+  var wordsCursor;
+  var examplesIndex;
+  var examplesCursor;
+  var examplesLoaded = false;
+  var examples;
+ 
+  transaction.objectStore("words").openCursor().onsuccess = function(event) {
+    wordsCursor = event.target.result;
+    examples = [];
+    attemptWalk();
+  }
+  examplesIndex = transaction.objectStore("examples").index("word");
+  examplesIndex.openCursor().onsuccess = function(event) {
+    examplesCursor = event.target.result;
+    examplesLoaded = true;
+    attemptWalk();
+  }
+  function attemptWalk() {
+    if (!wordsCursor || !examplesLoaded)
+      return;
+ 
+    if (examplesCursor && wordsCursor.value.word == examplesCursor.value.word) {
+      examples.push(examplesCursor.value.example);
+      examplesCursor.continue();
+    }
+    else {
+      wordsCursor.value.examples = examples
+      cards.push(wordsCursor.value);
+      wordsCursor.continue();
+    }
+  }
+    }*/
 }
 
 export default DB;

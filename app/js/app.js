@@ -222,6 +222,7 @@ function execute(generator, value) {
 _helper2.default.ajax({ url: 'https://cards-5d46.restdb.io/rest/cards' }).then(data => {
 	//data.forEach(data => Component.render(new Question(null, [data]), viewport.element));
 	data = Array.from(data);
+	data = _helper2.default.shuffle(data);
 	_component2.default.render(new _question2.default(data), viewport.element);
 	viewport.element.classList.remove('-state-loading');
 	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];

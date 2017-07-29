@@ -4,6 +4,7 @@
     box-shadow: 0 2px 4px $colors-shadow;
     border-radius: 2px;
     margin: 8px;
+    border-right: 4px solid;
 
     ._header {
         @extend %typography-header;
@@ -25,7 +26,7 @@
     ._subheading {
         @extend %typography-subheading;
         margin-bottom: 16px;
-        min-height: 48px;
+        //min-height: 48px;
     }
 
     ._caption {
@@ -53,25 +54,18 @@
         }
     }
 
-    &.-correct ._textbox {
+    &.-correct {
         border-color: $colors-success;
     }
 
-    &.-incorrect ._textbox {
+    &.-incorrect {
         border-color: $colors-error;
     }
 }
 
-@media (min-width: 481px) {
+@media (min-width: 465px) {
     .card {
-        display: inline-block;
-        width: calc(50% - 16px);
-    }
-}
-
-@media (min-width: 800px) {
-    .card {
-        display: inline-block;
-        width: calc(33.333% - 16px);
+        display: block;
+        margin: 8px auto;
     }
 }
