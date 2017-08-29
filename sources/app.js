@@ -7,15 +7,88 @@ import Component from "tools/component";
 import DB from "core/db";
 import Helper from "core/helper";
 
-import Card from "components/card";
+//import Card from "components/card";
 
-/*var viewport = {
-	element: document.body.querySelector('.viewport')
-}*/
+import { createStore } from 'redux';
 
 
+class Cards extends Component {
+    init() {
+    	this.store = _store;
+    	this.store.subscribe(this.update.bind(this))
+    	this.data.cards = [];
+    	this.update();
+    }
 
-//viewport.element.classList.add('-state-loading');
+    select() {
+    	return this.store.getState().cards;
+    }
+
+    update() {
+    	const cards = this.select();
+    	this.bindings.setData({ 
+    		header: `Total Cards: ${cards.length}`,
+    		cards,
+    	});
+    }
+
+    render() {
+    	return (
+    		`<div>
+    			<div data-bind="text: header"></div>
+    			<div data-bind="each: cards"></div>
+    		</div>`
+    	)
+    }
+}
+
+const addCard =(state, action) => {
+  	return Object.assign({}, state, { 
+  		cards: state.cards.concat({ word: action.data }), 
+	});
+}
+
+const removeCard =(state, action) => {
+  	return Object.assign({}, state, { 
+  		cards: [
+  			...state.cards.slice(0, action.id),
+    		...state.cards.slice(action.id + 1), 
+    	]
+	});
+}
+
+const updateCard =(state, action) => {
+	const card = Object.assign({}, state.cards[action.id]);
+	card.word = action.word;
+  	return Object.assign({}, state, { 
+  		cards: [
+  			...state.cards.slice(0, action.id),
+  			card,
+    		...state.cards.slice(action.id + 1), 
+    	]
+	});
+}
+
+const _reducers = {
+	'ADD_CARD': addCard,
+	'REMOVE_CARD': removeCard,
+	'UPDATE_CARD': updateCard
+}
+
+const _store = createStore((state, action) => {
+	if (_reducers[action.type]) return _reducers[action.type](state, action);
+	return state;
+}, { cards: [{ word: 'test1' }] })
+
+
+Component.render(new Cards(), document.querySelector('.viewport'))
+
+_store.dispatch({ type: 'ADD_CARD', data: 'test2' });
+_store.dispatch({ type: 'ADD_CARD', data: 'test3' });
+_store.dispatch({ type: 'REMOVE_CARD', id: 0 });
+_store.dispatch({ type: 'ADD_CARD', data: 'test5' });
+//_store.dispatch({ type: 'UPDATE_CARD', id: 0, word: 'test4' })
+
 
 /*DB.open().then(function(db) {
 	//Promise.all([ DB.get('words'), DB.get('examples') ])

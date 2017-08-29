@@ -5,8 +5,7 @@ class Component {
         Object.assign(this, extend);
         this.data = data;
         this.element = Component.render(this.render());
-        this.bindings = new Binder(this.element);
-        
+        this.bindings = new Binder(this.element, this.data);
         this.events = {};
 
         Array.from(this.element.querySelectorAll('[data-on]')).forEach(element => {
@@ -21,9 +20,7 @@ class Component {
 
         Object.keys(this.events).forEach(event => {
             this.element.children[0].addEventListener(event, this.handler);
-        });        
-
-        
+        });
 
         this.init();
     }
@@ -48,13 +45,13 @@ class Component {
             
             temp.innerHTML = component;
             
-            while (temp.children.item(0)) { 
+            //while (temp.children.item(0)) { 
                 fragment.appendChild(temp.children.item(0));
-            };
+            //};
 
             if (element) element.appendChild(fragment);
 
-            return fragment;
+            return fragment.children[0];
         }
     }
 }
