@@ -82,13 +82,13 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 class Helper {
-	static ajax({ type, url, key, data = null }) {
+	static ajax({ type, url, key = null, data = null }) {
 		var promise = new Promise(function (resolve, reject) {
 			var xhr = new XMLHttpRequest();
 			xhr.open(type, url);
 
 			xhr.setRequestHeader("content-type", "application/json");
-			xhr.setRequestHeader('x-apikey', key);
+			if (key) xhr.setRequestHeader('x-apikey', key);
 			data ? xhr.send(JSON.stringify(data)) : xhr.send();
 
 			xhr.addEventListener('load', function () {
@@ -836,69 +836,100 @@ __webpack_require__(/*! scss/app.scss */ 27);
 
 //if (NODE_ENV == 'development') require('scss/_debug.scss');
 
-_restdb2.default.get('examples').then(data => {
-	const examples = data;
-	const words = _helper2.default.unique(data, 'word');
-	const groups = _helper2.default.unique(data, 'group');
+document.querySelector('.viewport').classList.add('-state-loading');
 
-	_component2.default.render(new Cards({ words, examples, groups }), document.querySelector('.viewport'));
+_restdb2.default.get('words').then(data => {
+	//const examples = data;
+	//const words = Helper.unique(data, 'word');
+	//const groups = Helper.unique(data, 'group');
+
+	//Component.render(new Cards({ words, examples, groups }), document.querySelector('.viewport'));
+	const words = data;
+	words.forEach(data => _store.dispatch({ type: 'ADD_CARD', data }));
+	document.querySelector('.viewport').classList.remove('-state-loading');
 });
 
-class Card extends _component2.default {
+class CardAdd extends _component2.default {
 	init() {
-		/*this.bindings.setData({ 
-    		state: '-saving',
-    		examples: this.data.examples.concat(),
-    	});*/
-		this.element.querySelector('form').addEventListener('submit', this.save.bind(this));
-		this.element.querySelector('._audio').addEventListener('click', e => {
-			window.responsiveVoice.speak(e.target.textContent, 'Japanese Female');
+		this.element.querySelector('._textbox').addEventListener('change', e => {
+			const value = e.target.value.trim();
+			if (!value) return;
+
+			var cors_api_host = 'cors-anywhere.herokuapp.com';
+			var cors_api_url = 'https://' + cors_api_host + '/';
+			var slice = [].slice;
+			var origin = window.location.protocol + '//' + window.location.host;
+			var open = XMLHttpRequest.prototype.open;
+			XMLHttpRequest.prototype.open2 = function () {
+				var args = slice.call(arguments);
+				var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
+				if (targetOrigin && targetOrigin[0].toLowerCase() !== origin && targetOrigin[1] !== cors_api_host) {
+					args[1] = cors_api_url + args[1];
+				}
+				return open.apply(this, args);
+			};
+
+			var xhr = new XMLHttpRequest();
+			xhr.open2('GET', 'http://jisho.org/api/v1/search/words?keyword=' + value);
+			xhr.addEventListener('load', function () {
+				if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+					const response = JSON.parse(xhr.responseText);
+					if (response.data && response.data[0]) {
+						this.bindings.setData({
+							reading: response.data[0].japanese[0].reading,
+							meaning: response.data[0].senses[0].english_definitions.join('; '),
+							partOfSpeech: response.data[0].senses[0].parts_of_speech[0]
+						});
+					}
+				}
+			}.bind(this));
+			xhr.send();
 		});
+
+		this.element.querySelector('._button').addEventListener('click', this.save.bind(this));
 	}
 
 	save(e) {
 		e.preventDefault();
-		const elem = this.element.querySelector('._textbox');
-		const list = this.element.querySelector('._textbox[list]');
-		const value = elem.value.trim();
-		const group = list.value.trim();
+		const word = this.element.querySelector('._textbox').value.trim();
+		const reading = this.element.querySelector('[data-bind="value:reading"]').value.trim();
+		const meaning = this.element.querySelector('[data-bind="value:meaning"]').value.trim();
+		const partOfSpeech = this.element.querySelector('[data-bind="value:partOfSpeech"]').value.trim();
 
-		if (!value || !group) return;
-		this.bindings.setData({ state: '-saving' });
-		_restdb2.default.post('examples', { example: value, word: this.data.word, group }).then(data => {
-			const examples = this.data.examples.concat();
-			examples.push({ example: value, word: this.data.word, group });
-			elem.value = '';
-			list.value = '';
-			this.bindings.setData({
-				state: '-saved',
-				examples
+		if (word && reading && meaning && partOfSpeech) {
+			this.bindings.setData({ state: '-saving' });
+			_restdb2.default.post('words', { word, reading, meaning, partOfSpeech }).then(data => {
+				this.bindings.setData({
+					state: '-saved',
+					word: '',
+					reading: '',
+					meaning: '',
+					partOfSpeech: ''
+				});
+
+				_store.dispatch({ type: 'ADD_CARD', data: { word, reading, meaning, partOfSpeech } });
 			});
-		});
+		}
 	}
 
 	render() {
 		return `<div class="card">
-                <div class="_content">
-                	<div class="_caption">Examples for</div>
+                <div class="_content" data-bind="class:state">
                     <div class="_headline">
-                    	<span class="_audio">${this.data.word}</span>
+                    	Adding a new word
+                    	<div class="_textfield">
+                    		<input class="_textbox" placeholder="word" data-bind="value:word">
+                    	</div>
                     </div>
-                    <div class="_subheading"></div>
                     <div class="_description">
-                    	<ol data-bind="each:examples">
-                    		{{ <li>{% item %}</li> }}
-                    	</ol>
+                    	<div class="_textfield">
+                    		<input class="_textbox" placeholder="reading" data-bind="value:reading">
+                    		<input class="_textbox" placeholder="meaning" data-bind="value:meaning">
+                    		<input class="_textbox" placeholder="part of speech" data-bind="value:partOfSpeech">
+                    	</div>
                     </div>
-                    <div class="_textfield" data-bind="class:state">
-                    	<form>
-                        	<input class="_textbox" placeholder="Add an example...">
-                        	<input class="_textbox" list="_groups" placeholder="Choose a group...">
-                        	<datalist id="_groups" data-bind="each:groups">
-                        		{{ <option value=""> }}
-                        	</datalist>
-                        	<input type="submit" style="display:none">
-                        </from>
+                    <div class="_actions">
+                    	<button class="_button">Save</button>
                     </div>
                 </div>
             </div>`;
@@ -906,51 +937,48 @@ class Card extends _component2.default {
 }
 
 class Cards extends _component2.default {
-	/*constructor(data) {
- 	super(data, { Card })
- }*/
-
 	init() {
-		/*this.store = _store;
-  this.store.subscribe(this.update.bind(this))
-  this.data.cards = [];
+		this.store = _store;
+		this.store.subscribe(this.update2.bind(this));
+		/*this.data.cards = [];
   this.update();*/
-		this.form = this.element.querySelector('.new-word');
-		this.cards = this.element.querySelector('.cards');
-		this.data.words.map(word => {
-			_component2.default.render(new Card({
-				word,
-				examples: this.data.examples.filter(item => item.word === word),
-				groups: this.data.groups
-			}), this.cards);
+		//this.form = this.element.querySelector('.new-word');
+		//this.cards = this.element.querySelector('.cards');
+		/*this.data.words.map(word => {
+  	Component.render(new Card({ 
+  		word, 
+  		examples: this.data.examples.filter(item => item.word === word),
+  		groups: this.data.groups
+  	}), this.cards);
+  });*/
+		//this.form.addEventListener('submit', this.save.bind(this));
+	}
+
+	/*save(e) {
+ 	e.preventDefault();
+ const elem = this.form.querySelector('._textbox');
+ const value = elem.value.trim();
+ if (!value || this.data.words.filter(word => word === value).length) return;
+ this.cards.insertBefore(new Card({ word: value, examples: [], groups: this.data.groups }).element, this.cards.firstChild);
+ }*/
+
+	select() {
+		return this.store.getState().cards;
+	}
+
+	update2() {
+		const cards = this.select();
+		this.bindings.setData({
+			header: `Total Cards: ${cards.length}`,
+			cards
 		});
-		this.form.addEventListener('submit', this.save.bind(this));
 	}
-
-	save(e) {
-		e.preventDefault();
-		const elem = this.form.querySelector('._textbox');
-		const value = elem.value.trim();
-		if (!value || this.data.words.filter(word => word === value).length) return;
-		this.cards.insertBefore(new Card({ word: value, examples: [], groups: this.data.groups }).element, this.cards.firstChild);
-	}
-
-	/*select() {
- 	return this.store.getState().cards;
- }*/
-
-	/*update() {
- 	const cards = this.select();
- 	this.bindings.setData({ 
- 		header: `Total Cards: ${cards.length}`,
- 		cards,
- 	});
- }*/
 
 	render() {
 		return `<div>
-    			<div class="card">
+    			<!--<div class="card">
 	                <div class="_content">
+	                	<div class="_caption" data-bind="text:header"></div>
 	                	<div class="_subheading">Add a new word to the list</div>
 		    			<div class="_textfield" data-bind="class:state">
 		                	<form class='new-word'>
@@ -958,60 +986,91 @@ class Cards extends _component2.default {
 		                    </from>
 		                </div>
 	                </div>
+                </div>-->
+                <div class="cards" data-bind="each:cards" data-each-component="Card"></div>
+    		</div>`;
+	}
+}
+
+class Card extends _component2.default {
+	init() {
+		this.element.querySelector('._audio').addEventListener('click', () => {
+			responsiveVoice.speak(this.data.word, "Japanese Female");
+		});
+	}
+
+	render() {
+		return `<div class="card">
+	            <div class="_header">
+                    <div class="_caption">{{ partOfSpeech }}</div>
+                    <div class="_title">{{ word }}</div>
                 </div>
-                <div class="cards"></div>
+                <div class="_content">
+                    <div class="_headline _audio">{{ reading }}</div>
+                    <!--<div class="_subheading">{{ meaning }}</div>-->
+                    <div class="_description">
+                    	{{ meaning }}
+                        <!--<ruby>食堂<rt>しょくどう</rt></ruby> - dining room; dining hall; cafeteria <br>
+                        <ruby>食事<rt>しょくじ</rt></ruby> - meal​-->
+                    </div>
+                    <!--<div class="_textfield">
+                    	<form>
+                        	<input class="_textbox" placeholder="Add an example...">
+                        </form>
+                    </div>-->
+                </div>
     		</div>`;
 	}
 }
 
 //Component.render(new Cards({ words: ['勉強する'], groups: ['~て form'], examples:[{ example: '勉強してください', word: '勉強する', group: '~て form' }] }), document.querySelector('.viewport'));
 
-/*const addCard =(state, action) => {
-  	return Object.assign({}, state, { 
-  		cards: state.cards.concat({ word: action.data }), 
+const addCard = (state, action) => {
+	return Object.assign({}, state, {
+		cards: state.cards.concat(action.data)
 	});
-}
+};
 
-const removeCard =(state, action) => {
-  	return Object.assign({}, state, { 
-  		cards: [
-  			...state.cards.slice(0, action.id),
-    		...state.cards.slice(action.id + 1), 
-    	]
+const removeCard = (state, action) => {
+	return Object.assign({}, state, {
+		cards: [...state.cards.slice(0, action.id), ...state.cards.slice(action.id + 1)]
 	});
-}
+};
 
-const updateCard =(state, action) => {
+const updateCard = (state, action) => {
 	const card = Object.assign({}, state.cards[action.id]);
 	card.word = action.word;
-  	return Object.assign({}, state, { 
-  		cards: [
-  			...state.cards.slice(0, action.id),
-  			card,
-    		...state.cards.slice(action.id + 1), 
-    	]
+	return Object.assign({}, state, {
+		cards: [...state.cards.slice(0, action.id), card, ...state.cards.slice(action.id + 1)]
 	});
-}
+};
 
 const _reducers = {
 	'ADD_CARD': addCard,
 	'REMOVE_CARD': removeCard,
 	'UPDATE_CARD': updateCard
-}
+};
 
-const _store = createStore((state, action) => {
+const _store = (0, _redux.createStore)((state, action) => {
 	if (_reducers[action.type]) return _reducers[action.type](state, action);
 	return state;
-}, { cards: [{ word: 'test1' }] })*/
+}, { cards: [] });
 
-//Component.render('{{ Card }}', document.querySelector('.viewport'), { Card });
+_component2.default.render(`
+	<div>
+		<CardAdd />
+		<Cards />
+	</div>
+	`, {
+	element: document.querySelector('.viewport'),
+	components: { CardAdd, Cards, Card }
+});
 
 /*_store.dispatch({ type: 'ADD_CARD', data: 'test2' });
 _store.dispatch({ type: 'ADD_CARD', data: 'test3' });
 _store.dispatch({ type: 'REMOVE_CARD', id: 0 });
-_store.dispatch({ type: 'ADD_CARD', data: 'test5' });*/
-//_store.dispatch({ type: 'UPDATE_CARD', id: 0, word: 'test4' })
-
+_store.dispatch({ type: 'ADD_CARD', data: 'test5' });
+_store.dispatch({ type: 'UPDATE_CARD', id: 0, word: 'test4' })*/
 
 /*DB.open().then(function(db) {
 	//Promise.all([ DB.get('words'), DB.get('examples') ])
@@ -1188,11 +1247,11 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 class Binder {
-    constructor(element, data = {}) {
+    constructor(element, data = {}, component) {
         this.element = element;
+        this.component = component;
         this.data = data;
         this.bindings = {};
-        this.elements = {};
 
         Array.from(this.element.querySelectorAll('[data-bind]')).forEach(element => {
             const [type, data] = element.dataset.bind.split(':').map(item => item.trim());
@@ -1200,16 +1259,25 @@ class Binder {
             this.bindings[data].push({ type, element, previous: null });
         });
 
-        this.setData(this.data, true);
+        return this;
+
+        //this.setData(this.data);
     }
 
-    setData(data, a) {
+    setData(data) {
         Object.keys(data).forEach(key => {
             if (this.bindings[key]) {
                 this.bindings[key].forEach(item => {
-                    //TODO: refactor
-                    item.previous = a ? [] : this.data[key];
-                    this.render(item, data[key]);
+                    item.previous = this.data[key];
+
+                    if (item.type === 'each') {
+                        this.component.update(item, {
+                            added: this.diff('+', item.previous, data[key]),
+                            removed: this.diff('-', item.previous, data[key])
+                        });
+                        return;
+                    }
+                    this.component.update(item, data[key]);
                 });
             }
             this.data[key] = data[key];
@@ -1220,62 +1288,20 @@ class Binder {
         return this.data[key];
     }
 
-    render(item, data) {
-        if (item.type === 'text') {
-            item.element.textContent = data;
-            return;
-        }
-        if (item.type === 'disable') {
-            item.element.disabled = data;
-            return;
-        }
-        if (item.type === 'class') {
-            if (item.previous) item.element.classList.remove(item.previous);
-            if (data) item.element.classList.add(data);
-            return;
-        }
-        if (item.type === 'value') {
-            item.element.value = data;
-            return;
-        }
-        if (item.type === 'each') {
-            item.element.value = data;
-            this.add(item.element, ...this.diff('+', item.previous, data));
-            //this.remove(item.element, ...this.diff('-', item.previous, data));
-            return;
-        }
-    }
-
     diff(type, previous, data) {
-        if (type === '+') return data.filter(item => {
-            return previous.indexOf(item) === -1;
-        });
-        if (type === '-') return previous.filter(item => {
-            return data.indexOf(item) === -1;
-        });
-    }
+        if (!Array.isArray(previous)) previous = [];
 
-    add(element, ...components) {
-        const type = element.nodeName.toLowerCase();
-        components.forEach(component => {
-            let el = null;
-            if (type === 'ol') {
-                el = document.createElement('li');
-                el.innerHTML = `${component.example} <i>(${component.group})</i>`;
+        if (type === '+') return data.filter((item, index) => {
+            if (previous.indexOf(item) === -1) {
+                if (!item.key) item.key = String(index);
+                return true;
             }
-            if (type === 'datalist') {
-                el = document.createElement('option');
-                el.value = component;
-            }
-
-            element.appendChild(el);
         });
-    }
-
-    remove(element, ...components) {
-        components.forEach(component => {
-            element.removeChild(component.element);
-            //component.destroy()
+        if (type === '-') return previous.filter((item, index) => {
+            if (data.indexOf(item) === -1) {
+                if (!item.key) item.key = String(index);
+                return true;
+            }
         });
     }
 
@@ -1307,13 +1333,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 class Component {
     constructor(data = {}, components = {}) {
-        //Object.assign(this, extend);
         this.data = data;
-        this.element = Component.render(this.render());
-        this.bindings = new _binder2.default(this.element, this.data);
+        this.element = Component.render(this.render(), { data: this.data });
+        this.bindings = new _binder2.default(this.element, this.data, this);
         this.events = {};
+        this.components = {};
 
-        Component.components = Object.assign(Component.components, components);
+        if (data['key'] !== undefined) this.element.dataset.key = data['key'];
 
         Array.from(this.element.querySelectorAll('[data-on]')).forEach(element => {
             const [event, func] = element.dataset.on.split(':');
@@ -1343,36 +1369,88 @@ class Component {
         return `<div>Empty component</div>`;
     }
 
-    static render(component, element = null, components) {
-        if (typeof component !== 'string') {
-            if (element) element.appendChild(component.element);
-            return component.element;
-        } else {
-            let fragment = document.createDocumentFragment();
-            let temp = document.createElement('div');
-
-            temp.innerHTML = component.replace(/{{(.*)}}/g, (match, a) => {
-                return '';
-                //return (new components[a.trim()]).element;
-            });
-            //Component.compile(component, components);
-
-            //while (temp.children.item(0)) { 
-            fragment.appendChild(temp.children.item(0));
-            //};
-
-            if (element) element.appendChild(fragment);
-
-            return fragment.children[0];
+    update(item, data) {
+        if (item.type === 'text') {
+            item.element.textContent = data;
+            return;
+        }
+        if (item.type === 'disable') {
+            item.element.disabled = data;
+            return;
+        }
+        if (item.type === 'class') {
+            if (item.previous) item.element.classList.remove(item.previous);
+            if (data) item.element.classList.add(data);
+            return;
+        }
+        if (item.type === 'value') {
+            item.element.value = data;
+            return;
+        }
+        if (item.type === 'each') {
+            const componentName = item.element.dataset.eachComponent;
+            const toAdd = data.added.map(data => new Component.components[componentName](data));
+            const toRemove = data.removed.map(data => this.components[data.key]);
+            this.add(item.element, ...toAdd);
+            this.remove(item.element, ...toRemove);
+            return;
         }
     }
 
-    static compile(component, components) {}
+    destroy() {}
+
+    add(element, ...components) {
+        components.forEach(component => {
+            element.appendChild(component.element);
+            this.components[component.element.dataset.key] = component;
+        });
+    }
+
+    remove(element, ...components) {
+        components.forEach(component => {
+            element.removeChild(component.element);
+            component.destroy();
+            delete this.components[component.element.dataset.key];
+        });
+    }
+
+    static render(component, { element, data, components }) {
+        const fragment = document.createDocumentFragment();
+        const temp = document.createElement('div');
+        Object.assign(Component.components, components);
+
+        temp.innerHTML = Component.compile(component, data);
+
+        //while (temp.children.item(0)) { 
+        fragment.appendChild(temp.children.item(0));
+        //};
+
+        fragment.querySelectorAll('[data-component]').forEach(element => {
+            const key = element.dataset.component;
+            const data = Object.assign({}, element.dataset);
+            if (!Component.components[key]) return;
+            element.parentNode.replaceChild(new Component.components[key](data).element, element);
+        });
+
+        if (element) element.appendChild(fragment);
+
+        return fragment.children[0];
+    }
+
+    static compile(component, data) {
+        return component.replace(/{{(.+?)}}/g, (match, key) => {
+            key = key.trim();
+            return data[key] ? data[key] : match;
+        }).replace(/<([A-Z].+?)\/>/g, (match, data) => {
+            data = data.trim().split(' ');
+            const key = data[0];
+            return `<div data-component="${key}" ${data.map(item => `data-${item}`).join(' ')}></div>`;
+        });
+    }
 }
 
 Component.components = {};
 
-window.Component = Component;
 exports.default = Component;
 
 /***/ }),
@@ -1389,7 +1467,7 @@ exports = module.exports = __webpack_require__(/*! ../../~/css-loader/lib/css-ba
 
 
 // module
-exports.push([module.i, "@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 24px 16px 12px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '\\25B6';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n", "", {"version":3,"sources":["/Users/maxim/projects/cards/sources/scss/app.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_typography.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_colors.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/animations.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/viewport.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_metrics.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/card.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/toolbar.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/app.scss"],"names":[],"mappings":"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","file":"app.scss","sourcesContent":["@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 24px 16px 12px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '▶';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n","%typography-header {\n    font-size: 45px;\n    line-height: 63px;\n    color: $colors-text-main;\n}\n\n%typography-headline {\n    font-size: 24px;\n    line-height: 34px;\n    color: $colors-text-accent;\n}\n\n%typography-subheading {\n    font-size: 16px;\n    line-height: 24px;\n    color: $colors-text-accent;\n}\n\n%typography-caption {\n    font-size: 13px;\n    line-height: 24px;\n    color: $colors-text-caption;\n}\n\n%typography-body {\n    font-size: 15px;\n    line-height: 24px;\n    color: $colors-text-main;\n}\n\n%typography-input {\n    font-size: 14px;\n    line-height: 24px;\n    color: $colors-text-main;\n}","// Main\n$colors-primary: #00bcd4; //#b71c1c;\n$colors-accent: #d50000;\n$colors-background: #FAFAFA;\n\n$colors-success: #388e3c;\n$colors-error: #F44336;\n\n// Text colors\n$colors-text-main: rgba(#000, .87);\n$colors-text-accent: rgba(#000, 1);\n$colors-text-inactive: rgba(#000, .38);\n\n$colors-text-caption: rgba(#000, .54);\n$colors-text-header: rgba(#fff, 1);\n\n// Divider\n$colors-divider: rgba(#000, .38);\n\n// Shadows\n$colors-shadow: rgba(#000, .26);","@keyframes fade {\n\tfrom { opacity: 0; }\n\tto   { opacity: 1; }\n}\n\n@keyframes rotate {\n\tto  { transform: rotate(360deg); }\n}\n\n@keyframes dash {\n\t0% {\n\t\tstroke-dasharray: 1, 200;\n\t\tstroke-dashoffset: 0;\n\t}\n\t50% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -35px;\n\t}\n\t100% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -124px;\n\t}\n}","%viewport-animation-fade-out {\n    animation: fade .4s; \n    animation-direction: reverse; \n    animation-fill-mode: forwards; \n}\n\n.viewport {\n    position: relative;\n    top: $toolbar-height-portrait;\n    height: calc(100% - #{$toolbar-height-portrait});\n    overflow: auto;\n\n    &::before {\n        content: \"\";\n        display: none;\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: $colors-background;\n        z-index: 1;\n    }\n}\n\n.viewport.-state-loading {\n    &::before,\n    ~ .viewport-icons.-preloader {\n        display: block;\n        /* animation: fade .4s; */\n    }\n}\n\n\n.viewport-icons { display: none; }\n\n.viewport-icons.-preloader {\n    position: fixed;\n    top: calc(50% - 25px);\n    left: calc(50% - 25px);\n    width: 50px;\n    height: 50px;\n    color: $colors-primary;\n    transform-origin: center center;\n    animation: rotate 1.5s linear infinite;\n    z-index: 1;\n\n    circle {\n        fill: none;\n        stroke-width: 2; \n        stroke-miterlimi: 10;\n        stroke-dasharray: 1, 200;\n        stroke-dashoffset: 0;\n        stroke-linecap: round;\n        animation: dash 1.5s ease-in-out infinite;\n    }\n}","$toolbar-height-portrait: 56px;\n$toolbar-height-landscape: 48px;",".card {\n    max-width: 464px;\n    background: #fff;\n    box-shadow: 0 2px 4px $colors-shadow;\n    border-radius: 2px;\n    margin: 8px;\n    //border-left: 2px solid;\n\n    ._header {\n        @extend %typography-header;\n        padding: 24px 16px 12px;\n        //background: $colors-primary;\n    }\n\n    ._content {\n        @extend %typography-body;\n        padding: 16px 16px 24px;\n\n        ol { margin-left: 20px; }\n        i { font-size: 11px; }\n    }\n\n    ._headline {\n        @extend %typography-headline;\n        margin-bottom: 2px;\n        margin-top: -4px;\n    }\n\n    ._subheading {\n        @extend %typography-subheading;\n        margin-bottom: 16px;\n        //min-height: 48px;\n    }\n\n    ._caption {\n        @extend %typography-caption;\n    }\n\n    ._textfield {\n        margin-top: 16px;\n\n        &.-saving {\n            &::before { content: 'saving...'; position: absolute; margin-left: 5px; animation: saving .6s; animation-iteration-count: infinite; }\n            ._textbox { visibility: hidden; }\n        }\n    }\n\n    ._textbox {\n        @extend %typography-input;\n        box-sizing: border-box;\n        width: 100%;\n        padding: 0 2px 4px;\n        margin-top: 16px;\n        border: none;\n        border-bottom: 2px solid $colors-shadow;\n        appearance: none;\n        outline: none;\n        background: none;\n        transition: border-color .2s;\n\n        &:focus {\n            border-color: $colors-primary;\n        }\n    }\n\n    ._textbox[list]  {\n        \n    }\n\n    datalist { border-color: $colors-shadow; }\n\n    ._audio {\n        &::before {\n            content: '▶';\n            display: inline-block;\n            font-size: 0.6em;\n            line-height: 1;\n            text-align: center;\n            width: 1.6em;\n            height: 1.6em;\n            border: 2px solid;\n            border-radius: 50%;\n            background: $colors-background;\n            color: $colors-primary;\n            margin-right: 0.5em;\n            box-sizing: border-box;\n            padding-top: 0.2em;\n            padding-left: 0.2em;\n            vertical-align: 0.2em;\n        }\n    }\n\n    &.-correct {\n        border-color: $colors-success;\n    }\n\n    &.-incorrect {\n        border-color: $colors-error;\n    }\n}\n\n@media (min-width: 465px) {\n    .card {\n        display: block;\n        margin: 8px auto;\n    }\n}\n\n@keyframes saving {\n    0%  { content: 'saving' }\n    25% { content: 'saving.' }\n    50% { content: 'saving..' }\n    75% { content: 'saving...' }\n}",".toolbar {\n\theight: $toolbar-height-portrait;\n\tpadding: 0 16px;\n\tbackground-color: $colors-primary;\n\tbox-shadow: 0 3px 6px $colors-shadow;\n\n\t._title {\n\t\tcolor: $colors-text-header; \n\t\tfont-size: 20px;\n\t\tline-height: 52px;\n\t}\n}\n\n.toolbar.-fixed {\n    position: fixed;\n    top: 0;\n    left: 0;\n    z-index: 1000;\n    width: 100%;\n}","@import \"material/schemes/colors\";\n@import \"material/schemes/typography\";\n@import \"material/schemes/metrics\";\n\n@import \"material/animations\";\n\n@import \"material/components/viewport\";\n@import \"material/components/card\";\n@import \"material/components/toolbar\";\n\n\n//\n// Main Styles\nhtml { height: 100%; }\nbody {\n    background-color: $colors-background;\n    -webkit-font-smoothing: antialiased;\n    font-family: \"Noto Sans\", Roboto, serif;\n    height: 100%;\n    margin: 0;\n\n    * {\n        margin: 0;\n        padding: 0;\n    }\n}\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */"],"sourceRoot":""}]);
+exports.push([module.i, "@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content, .card ._button {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 12px 16px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n    .card ._content.-saving {\n      position: relative; }\n      .card ._content.-saving::before {\n        content: 'saving...';\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        margin-left: -41px;\n        animation: saving .6s;\n        animation-iteration-count: infinite; }\n      .card ._content.-saving ._textbox, .card ._content.-saving ._button {\n        visibility: hidden; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '\\25B6';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n  .card ._actions {\n    padding: 32px 0 0; }\n  .card ._button {\n    border: none;\n    padding: 6px 12px;\n    color: #fff;\n    background: #00bcd4; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  min-height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  min-height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n", "", {"version":3,"sources":["/Users/maxim/projects/cards/sources/scss/app.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_typography.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_colors.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/animations.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/viewport.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_metrics.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/card.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/toolbar.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/app.scss"],"names":[],"mappings":"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","file":"app.scss","sourcesContent":["@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content, .card ._button {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 12px 16px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n    .card ._content.-saving {\n      position: relative; }\n      .card ._content.-saving::before {\n        content: 'saving...';\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        margin-left: -41px;\n        animation: saving .6s;\n        animation-iteration-count: infinite; }\n      .card ._content.-saving ._textbox, .card ._content.-saving ._button {\n        visibility: hidden; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '▶';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n  .card ._actions {\n    padding: 32px 0 0; }\n  .card ._button {\n    border: none;\n    padding: 6px 12px;\n    color: #fff;\n    background: #00bcd4; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  min-height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  min-height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n","%typography-header {\n    font-size: 45px;\n    line-height: 63px;\n    color: $colors-text-main;\n}\n\n%typography-headline {\n    font-size: 24px;\n    line-height: 34px;\n    color: $colors-text-accent;\n}\n\n%typography-subheading {\n    font-size: 16px;\n    line-height: 24px;\n    color: $colors-text-accent;\n}\n\n%typography-caption {\n    font-size: 13px;\n    line-height: 24px;\n    color: $colors-text-caption;\n}\n\n%typography-body {\n    font-size: 15px;\n    line-height: 24px;\n    color: $colors-text-main;\n}\n\n%typography-input {\n    font-size: 14px;\n    line-height: 24px;\n    color: $colors-text-main;\n}","// Main\n$colors-primary: #00bcd4; //#b71c1c;\n$colors-accent: #d50000;\n$colors-background: #FAFAFA;\n\n$colors-success: #388e3c;\n$colors-error: #F44336;\n\n// Text colors\n$colors-text-main: rgba(#000, .87);\n$colors-text-accent: rgba(#000, 1);\n$colors-text-inactive: rgba(#000, .38);\n\n$colors-text-caption: rgba(#000, .54);\n$colors-text-header: rgba(#fff, 1);\n\n// Divider\n$colors-divider: rgba(#000, .38);\n\n// Shadows\n$colors-shadow: rgba(#000, .26);","@keyframes fade {\n\tfrom { opacity: 0; }\n\tto   { opacity: 1; }\n}\n\n@keyframes rotate {\n\tto  { transform: rotate(360deg); }\n}\n\n@keyframes dash {\n\t0% {\n\t\tstroke-dasharray: 1, 200;\n\t\tstroke-dashoffset: 0;\n\t}\n\t50% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -35px;\n\t}\n\t100% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -124px;\n\t}\n}","%viewport-animation-fade-out {\n    animation: fade .4s; \n    animation-direction: reverse; \n    animation-fill-mode: forwards; \n}\n\n.viewport {\n    position: relative;\n    top: $toolbar-height-portrait;\n    height: calc(100% - #{$toolbar-height-portrait});\n    overflow: auto;\n\n    &::before {\n        content: \"\";\n        display: none;\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: $colors-background;\n        z-index: 1;\n    }\n}\n\n.viewport.-state-loading {\n    &::before,\n    ~ .viewport-icons.-preloader {\n        display: block;\n        /* animation: fade .4s; */\n    }\n}\n\n\n.viewport-icons { display: none; }\n\n.viewport-icons.-preloader {\n    position: fixed;\n    top: calc(50% - 25px);\n    left: calc(50% - 25px);\n    width: 50px;\n    height: 50px;\n    color: $colors-primary;\n    transform-origin: center center;\n    animation: rotate 1.5s linear infinite;\n    z-index: 1;\n\n    circle {\n        fill: none;\n        stroke-width: 2; \n        stroke-miterlimi: 10;\n        stroke-dasharray: 1, 200;\n        stroke-dashoffset: 0;\n        stroke-linecap: round;\n        animation: dash 1.5s ease-in-out infinite;\n    }\n}","$toolbar-height-portrait: 56px;\n$toolbar-height-landscape: 48px;",".card {\n    max-width: 464px;\n    background: #fff;\n    box-shadow: 0 2px 4px $colors-shadow;\n    border-radius: 2px;\n    margin: 8px;\n    //border-left: 2px solid;\n\n    ._header {\n        @extend %typography-header;\n        padding: 12px 16px;\n        //padding: 24px 16px 12px;\n        //background: $colors-primary;\n    }\n\n    ._content {\n        @extend %typography-body;\n        padding: 16px 16px 24px;\n\n        ol { margin-left: 20px; }\n        i { font-size: 11px; }\n\n        &.-saving {\n            position: relative;\n            &::before { \n                content: 'saving...'; \n                position: absolute; \n                top: 50%;\n                left: 50%;\n                margin-left: -41px; \n                animation: saving .6s; \n                animation-iteration-count: infinite; \n            }\n\n            ._textbox, ._button {\n                visibility: hidden\n            }\n        }\n    }\n\n    ._headline {\n        @extend %typography-headline;\n        margin-bottom: 2px;\n        margin-top: -4px;\n    }\n\n    ._subheading {\n        @extend %typography-subheading;\n        margin-bottom: 16px;\n        //min-height: 48px;\n    }\n\n    ._caption {\n        @extend %typography-caption;\n    }\n\n    ._textfield {\n        margin-top: 16px;\n\n        &.-saving {\n            &::before { content: 'saving...'; position: absolute; margin-left: 5px; animation: saving .6s; animation-iteration-count: infinite; }\n            ._textbox { visibility: hidden; }\n        }\n    }\n\n    ._textbox {\n        @extend %typography-input;\n        box-sizing: border-box;\n        width: 100%;\n        padding: 0 2px 4px;\n        margin-top: 16px;\n        border: none;\n        border-bottom: 2px solid $colors-shadow;\n        appearance: none;\n        outline: none;\n        background: none;\n        transition: border-color .2s;\n\n        &:focus {\n            border-color: $colors-primary;\n        }\n    }\n\n    ._textbox[list]  {\n        \n    }\n\n    datalist { border-color: $colors-shadow; }\n\n    ._audio {\n        &::before {\n            content: '▶';\n            display: inline-block;\n            font-size: 0.6em;\n            line-height: 1;\n            text-align: center;\n            width: 1.6em;\n            height: 1.6em;\n            border: 2px solid;\n            border-radius: 50%;\n            background: $colors-background;\n            color: $colors-primary;\n            margin-right: 0.5em;\n            box-sizing: border-box;\n            padding-top: 0.2em;\n            padding-left: 0.2em;\n            vertical-align: 0.2em;\n        }\n    }\n\n    &.-correct {\n        border-color: $colors-success;\n    }\n\n    &.-incorrect {\n        border-color: $colors-error;\n    }\n\n    ._actions {\n        padding: 32px 0 0;\n    }\n\n    ._button {\n        @extend %typography-body;\n        border: none;\n        padding: 6px 12px;\n        color: #fff;\n        background: $colors-primary;\n    }\n}\n\n@media (min-width: 465px) {\n    .card {\n        display: block;\n        margin: 8px auto;\n    }\n}\n\n@keyframes saving {\n    0%  { content: 'saving' }\n    25% { content: 'saving.' }\n    50% { content: 'saving..' }\n    75% { content: 'saving...' }\n}",".toolbar {\n\tmin-height: $toolbar-height-portrait;\n\tpadding: 0 16px;\n\tbackground-color: $colors-primary;\n\tbox-shadow: 0 3px 6px $colors-shadow;\n\n\t._title {\n\t\tcolor: $colors-text-header; \n\t\tfont-size: 20px;\n\t\tline-height: 52px;\n\t}\n}\n\n.toolbar.-fixed {\n    position: fixed;\n    top: 0;\n    left: 0;\n    z-index: 1000;\n    width: 100%;\n}","@import \"material/schemes/colors\";\n@import \"material/schemes/typography\";\n@import \"material/schemes/metrics\";\n\n@import \"material/animations\";\n\n@import \"material/components/viewport\";\n@import \"material/components/card\";\n@import \"material/components/toolbar\";\n\n\n//\n// Main Styles\nhtml { height: 100%; }\nbody {\n    background-color: $colors-background;\n    -webkit-font-smoothing: antialiased;\n    font-family: \"Noto Sans\", Roboto, serif;\n    min-height: 100%;\n    margin: 0;\n\n    * {\n        margin: 0;\n        padding: 0;\n    }\n}\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */"],"sourceRoot":""}]);
 
 // exports
 

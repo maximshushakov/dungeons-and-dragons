@@ -51,7 +51,7 @@ class CardAdd extends Component {
 						this.bindings.setData({
 							reading: response.data[0].japanese[0].reading,
 							meaning: response.data[0].senses[0].english_definitions.join('; '),
-							partOfSpeech: response.data[0].senses[0].parts_of_speech[0].toLowerCase(),
+							partOfSpeech: response.data[0].senses[0].parts_of_speech[0],
 						});
 					}
 				}
@@ -171,7 +171,11 @@ class Cards extends Component {
 }
 
 class Card extends Component {
-	init() {}
+	init() {
+		this.element.querySelector('._audio').addEventListener('click', () => {
+			responsiveVoice.speak(this.data.word, "Japanese Female");
+		});
+	}
 
     render() {
     	return (
@@ -181,12 +185,13 @@ class Card extends Component {
                     <div class="_title">{{ word }}</div>
                 </div>
                 <div class="_content">
-                    <div class="_headline">[{{ reading }}]</div>
-                    <div class="_subheading">{{ meaning }}</div>
-                    <!--<div class="_description">
-                        <ruby>食堂<rt>しょくどう</rt></ruby> - dining room; dining hall; cafeteria <br>
-                        <ruby>食事<rt>しょくじ</rt></ruby> - meal​
-                    </div>-->
+                    <div class="_headline _audio">{{ reading }}</div>
+                    <!--<div class="_subheading">{{ meaning }}</div>-->
+                    <div class="_description">
+                    	{{ meaning }}
+                        <!--<ruby>食堂<rt>しょくどう</rt></ruby> - dining room; dining hall; cafeteria <br>
+                        <ruby>食事<rt>しょくじ</rt></ruby> - meal​-->
+                    </div>
                     <!--<div class="_textfield">
                     	<form>
                         	<input class="_textbox" placeholder="Add an example...">
