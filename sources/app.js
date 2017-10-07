@@ -1,30 +1,148 @@
-require('scss/app.scss');
+ require('scss/app.scss');
 
 //if (NODE_ENV == 'development') require('scss/_debug.scss');
 
 import Component from "tools/component";
-
-import DB from "core/db";
+import RestDB from "core/restdb";
 import Helper from "core/helper";
-
-//import Card from "components/card";
-
 import { createStore } from 'redux';
 
+
+document.querySelector('.viewport').classList.add('-state-loading');
+
+RestDB.get('words').then(data => {
+	//const examples = data;
+	//const words = Helper.unique(data, 'word');
+	//const groups = Helper.unique(data, 'group');
+
+	//Component.render(new Cards({ words, examples, groups }), document.querySelector('.viewport'));
+	const words = data;
+	words.forEach(data => _store.dispatch({ type: 'ADD_CARD', data }));
+	document.querySelector('.viewport').classList.remove('-state-loading');
+});
+
+class CardAdd extends Component {
+	init() {
+    	this.element.querySelector('._textbox').addEventListener('change', (e) => {
+    		const value = e.target.value.trim();
+    		if (!value) return;
+
+		    var cors_api_host = 'cors-anywhere.herokuapp.com';
+		    var cors_api_url = 'https://' + cors_api_host + '/';
+		    var slice = [].slice;
+		    var origin = window.location.protocol + '//' + window.location.host;
+		    var open = XMLHttpRequest.prototype.open;
+		    XMLHttpRequest.prototype.open2 = function() {
+		        var args = slice.call(arguments);
+		        var targetOrigin = /^https?:\/\/([^\/]+)/i.exec(args[1]);
+		        if (targetOrigin && targetOrigin[0].toLowerCase() !== origin &&
+		            targetOrigin[1] !== cors_api_host) {
+		            args[1] = cors_api_url + args[1];
+		        }
+		        return open.apply(this, args);
+		    };
+
+		    var xhr = new XMLHttpRequest();
+			xhr.open2('GET', 'http://jisho.org/api/v1/search/words?keyword='+value);
+			xhr.addEventListener('load', function() {
+				if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+					const response = JSON.parse(xhr.responseText);
+					if (response.data && response.data[0]) {
+						this.bindings.setData({
+							reading: response.data[0].japanese[0].reading,
+							meaning: response.data[0].senses[0].english_definitions.join('; '),
+							partOfSpeech: response.data[0].senses[0].parts_of_speech[0].toLowerCase(),
+						});
+					}
+				}
+			}.bind(this));
+			xhr.send();
+    	});
+
+
+    	this.element.querySelector('._button').addEventListener('click', this.save.bind(this));
+	}
+
+	save(e) {
+		e.preventDefault();
+		const word = this.element.querySelector('._textbox').value.trim();
+		const reading = this.element.querySelector('[data-bind="value:reading"]').value.trim();
+		const meaning = this.element.querySelector('[data-bind="value:meaning"]').value.trim();
+		const partOfSpeech = this.element.querySelector('[data-bind="value:partOfSpeech"]').value.trim();
+
+		if (word && reading && meaning && partOfSpeech) {
+			this.bindings.setData({ state: '-saving' });
+			RestDB.post('words', { word, reading, meaning, partOfSpeech }).then(data => {
+				this.bindings.setData({ 
+					state: '-saved',
+					word: '',
+					reading: '',
+					meaning: '',
+					partOfSpeech: '',
+				});
+
+				_store.dispatch({ type: 'ADD_CARD', data: { word, reading, meaning, partOfSpeech } })
+			})
+		}
+	}
+	
+	render() {
+		return (
+    		`<div class="card">
+                <div class="_content" data-bind="class:state">
+                    <div class="_headline">
+                    	Adding a new word
+                    	<div class="_textfield">
+                    		<input class="_textbox" placeholder="word" data-bind="value:word">
+                    	</div>
+                    </div>
+                    <div class="_description">
+                    	<div class="_textfield">
+                    		<input class="_textbox" placeholder="reading" data-bind="value:reading">
+                    		<input class="_textbox" placeholder="meaning" data-bind="value:meaning">
+                    		<input class="_textbox" placeholder="part of speech" data-bind="value:partOfSpeech">
+                    	</div>
+                    </div>
+                    <div class="_actions">
+                    	<button class="_button">Save</button>
+                    </div>
+                </div>
+            </div>`
+		)
+	}
+}
 
 class Cards extends Component {
     init() {
     	this.store = _store;
-    	this.store.subscribe(this.update.bind(this))
-    	this.data.cards = [];
-    	this.update();
+    	this.store.subscribe(this.update2.bind(this))
+    	/*this.data.cards = [];
+    	this.update();*/
+    	//this.form = this.element.querySelector('.new-word');
+    	//this.cards = this.element.querySelector('.cards');
+    	/*this.data.words.map(word => {
+    		Component.render(new Card({ 
+    			word, 
+    			examples: this.data.examples.filter(item => item.word === word),
+    			groups: this.data.groups
+    		}), this.cards);
+    	});*/
+    	//this.form.addEventListener('submit', this.save.bind(this));
     }
+
+    /*save(e) {
+    	e.preventDefault();
+		const elem = this.form.querySelector('._textbox');
+		const value = elem.value.trim();
+		if (!value || this.data.words.filter(word => word === value).length) return;
+		this.cards.insertBefore(new Card({ word: value, examples: [], groups: this.data.groups }).element, this.cards.firstChild);
+    }*/
 
     select() {
     	return this.store.getState().cards;
     }
 
-    update() {
+    update2() {
     	const cards = this.select();
     	this.bindings.setData({ 
     		header: `Total Cards: ${cards.length}`,
@@ -35,16 +153,56 @@ class Cards extends Component {
     render() {
     	return (
     		`<div>
-    			<div data-bind="text: header"></div>
-    			<div data-bind="each: cards"></div>
+    			<!--<div class="card">
+	                <div class="_content">
+	                	<div class="_caption" data-bind="text:header"></div>
+	                	<div class="_subheading">Add a new word to the list</div>
+		    			<div class="_textfield" data-bind="class:state">
+		                	<form class='new-word'>
+		                    	<input class="_textbox" placeholder="Add a word...">
+		                    </from>
+		                </div>
+	                </div>
+                </div>-->
+                <div class="cards" data-bind="each:cards" data-each-component="Card"></div>
     		</div>`
     	)
     }
 }
 
+class Card extends Component {
+	init() {}
+
+    render() {
+    	return (
+    		`<div class="card">
+	            <div class="_header">
+                    <div class="_caption">{{ partOfSpeech }}</div>
+                    <div class="_title">{{ word }}</div>
+                </div>
+                <div class="_content">
+                    <div class="_headline">[{{ reading }}]</div>
+                    <div class="_subheading">{{ meaning }}</div>
+                    <!--<div class="_description">
+                        <ruby>食堂<rt>しょくどう</rt></ruby> - dining room; dining hall; cafeteria <br>
+                        <ruby>食事<rt>しょくじ</rt></ruby> - meal​
+                    </div>-->
+                    <!--<div class="_textfield">
+                    	<form>
+                        	<input class="_textbox" placeholder="Add an example...">
+                        </form>
+                    </div>-->
+                </div>
+    		</div>`
+    	)
+    }
+}
+
+//Component.render(new Cards({ words: ['勉強する'], groups: ['~て form'], examples:[{ example: '勉強してください', word: '勉強する', group: '~て form' }] }), document.querySelector('.viewport'));
+
 const addCard =(state, action) => {
   	return Object.assign({}, state, { 
-  		cards: state.cards.concat({ word: action.data }), 
+  		cards: state.cards.concat(action.data), 
 	});
 }
 
@@ -78,16 +236,24 @@ const _reducers = {
 const _store = createStore((state, action) => {
 	if (_reducers[action.type]) return _reducers[action.type](state, action);
 	return state;
-}, { cards: [{ word: 'test1' }] })
+}, { cards: [] })
 
 
-Component.render(new Cards(), document.querySelector('.viewport'))
+Component.render(`
+	<div>
+		<CardAdd />
+		<Cards />
+	</div>
+	`, { 
+	element: document.querySelector('.viewport'), 
+	components: { CardAdd, Cards, Card }
+});
 
-_store.dispatch({ type: 'ADD_CARD', data: 'test2' });
+/*_store.dispatch({ type: 'ADD_CARD', data: 'test2' });
 _store.dispatch({ type: 'ADD_CARD', data: 'test3' });
 _store.dispatch({ type: 'REMOVE_CARD', id: 0 });
 _store.dispatch({ type: 'ADD_CARD', data: 'test5' });
-//_store.dispatch({ type: 'UPDATE_CARD', id: 0, word: 'test4' })
+_store.dispatch({ type: 'UPDATE_CARD', id: 0, word: 'test4' })*/
 
 
 /*DB.open().then(function(db) {
@@ -185,19 +351,6 @@ function execute(generator, value) {
   }
 }*/
 
-/*Helper.ajax({ url: 'https://cards-5d46.restdb.io/rest/examples' }).then(data => {
-	//data.forEach(data => Component.render(new Question(null, [data]), viewport.element));
-	data = Array.from(data); 
-	data = Helper.shuffle(data);
-	Component.render(new Question(data), viewport.element);
-	viewport.element.classList.remove('-state-loading');
-	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
-	//let card = new Card(...data);
-	//card.setData({word: 'word1', reading: 'reading1', meaning: 'meaning1', status: '-default'});
-	//card.setData({status: '-default1'});
-	//data.forEach(data => Component.render(card, viewport.element));
-});*/
-
 
 
 
@@ -218,18 +371,6 @@ xhr.setRequestHeader("x-apikey", "5948a6725f54052560916824");
 xhr.send(data);*/
 
 
-//Helper.ajax({ url: '/data/questions.json' }).then(data => {
-	//data.forEach(data => 
-	//	Component.render(new Question(data), viewport.element)//);
-	//data = Array.from(data); 
-	//let data = [{word: 'test', meaning: "sdfsfd", reading: "sfsdfds", status: '-default'}];
-	//let card = new Card(...data);
-	//card.setData({word: 'word1', reading: 'reading1', meaning: 'meaning1', status: '-default'});
-	//card.setData({status: '-default1'});
-	//data.forEach(data => Component.render(card, viewport.element));
-//});
-
-
 /*if ('serviceWorker' in navigator) {
 	navigator.serviceWorker.register('/app/sw.js').then(registration => {
 		setTimeout(() => {
@@ -242,51 +383,3 @@ xhr.send(data);*/
 		console.error(error);
 	});
 }*/
-
-
-
-
-
-
-
-
-/*class Robot {
-	constructor() {
-		this.isHold = false;
-		this.position = 0;
-		this.blocks = Array(10).fill(0);
-		this.commands = {
-			'P': this.pickup.bind(this),
-			'M': this.move.bind(this),
-			'L': this.lower.bind(this),
-		}
-	}
-
-	pickup() {
-		this.position = 0;
-		this.isHold = true;
-	}
-
-	move() {
-		if (this.position < 9) this.position++;
-	}
-
-	lower() {
-		if (!this.isHold) return;
-		if (this.blocks[this.position] < 15) {
-			this.blocks[this.position]++;
-			this.isHold = false;
-		}
-	}	
-
-	execute(commands) {
-		if (typeof commands !== 'string') throw new Error('commands are not a String');
-		commands.split('').forEach(command => {
-			command = command.toUpperCase();
-			this.commands[command] && this.commands[command]()
-		});
-		return this.blocks.map(column => column.toString(16)).join('');
-	}
-}
-
-console.log((new Robot()).execute('PLPLPL'))*/

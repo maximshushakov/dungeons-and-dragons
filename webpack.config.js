@@ -41,7 +41,6 @@ module.exports = {
 						'sass-loader',
 					]
 				})*/
-				//loader: 'style!css!sass?outputStyle=expanded'
 			},
 		],
 	},

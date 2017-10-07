@@ -1,7 +1,8 @@
+@charset "UTF-8";
 .card ._header {
   font-size: 45px;
   line-height: 63px;
-  color: #000; }
+  color: rgba(0, 0, 0, 0.87); }
 
 .card ._headline {
   font-size: 24px;
@@ -79,7 +80,7 @@
   left: calc(50% - 25px);
   width: 50px;
   height: 50px;
-  color: #03A9F4;
+  color: #00bcd4;
   transform-origin: center center;
   animation: rotate 1.5s linear infinite;
   z-index: 1; }
@@ -102,14 +103,23 @@
     padding: 24px 16px 12px; }
   .card ._content {
     padding: 16px 16px 24px; }
+    .card ._content ol {
+      margin-left: 20px; }
   .card ._headline {
     margin-bottom: 2px;
     margin-top: -4px; }
   .card ._subheading {
-    margin-bottom: 16px;
-    min-height: 48px; }
+    margin-bottom: 16px; }
   .card ._textfield {
     margin-top: 16px; }
+    .card ._textfield.-saving::before {
+      content: 'saving...';
+      position: absolute;
+      margin-left: 5px;
+      animation: saving .6s;
+      animation-iteration-count: infinite; }
+    .card ._textfield.-saving ._textbox {
+      visibility: hidden; }
   .card ._textbox {
     box-sizing: border-box;
     width: 100%;
@@ -121,26 +131,48 @@
     background: none;
     transition: border-color .2s; }
     .card ._textbox:focus {
-      border-color: #03A9F4; }
-  .card.-correct ._textbox {
+      border-color: #00bcd4; }
+  .card ._audio::before {
+    content: '\25B6';
+    display: inline-block;
+    font-size: 0.6em;
+    line-height: 1;
+    text-align: center;
+    width: 1.6em;
+    height: 1.6em;
+    border: 2px solid;
+    border-radius: 50%;
+    background: #FAFAFA;
+    color: #00bcd4;
+    margin-right: 0.5em;
+    box-sizing: border-box;
+    padding-top: 0.2em;
+    padding-left: 0.2em;
+    vertical-align: 0.17em; }
+  .card.-correct {
     border-color: #388e3c; }
-  .card.-incorrect ._textbox {
+  .card.-incorrect {
     border-color: #F44336; }
 
-@media (min-width: 481px) {
+@media (min-width: 465px) {
   .card {
-    display: inline-block;
-    width: calc(50% - 16px); } }
+    display: block;
+    margin: 8px auto; } }
 
-@media (min-width: 800px) {
-  .card {
-    display: inline-block;
-    width: calc(33.333% - 16px); } }
+@keyframes saving {
+  0% {
+    content: 'saving'; }
+  25% {
+    content: 'saving.'; }
+  50% {
+    content: 'saving..'; }
+  75% {
+    content: 'saving...'; } }
 
 .toolbar {
   height: 56px;
   padding: 0 16px;
-  background-color: #03A9F4;
+  background-color: #00bcd4;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }
   .toolbar ._title {
     color: white;

@@ -1,5 +1,5 @@
 .toolbar {
-	height: $toolbar-height-portrait;
+	min-height: $toolbar-height-portrait;
 	padding: 0 16px;
 	background-color: $colors-primary;
 	box-shadow: 0 3px 6px $colors-shadow;

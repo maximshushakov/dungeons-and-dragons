@@ -1,26 +1,34 @@
-export default function Store(data, actions = {}) {
-	const _state = data;
+import { createStore } from 'redux';
+
+export default function Store(actions = {}, reducers = {}, data = null) {
 	const _actions = actions;
+	const _reducers = reducers;
 	const _subscribers = {};
+	const _store = createStore((state, action) => {
+		if (_reducers[action.type]) return _reducers[action.type](state);
+		return state;
+	}, data)
 
 	return  {
 	    get state() {
-	    	return Array.isArray(_state) ? _state.slice() : Object.assign({}, _state);
+	    	return store.getState();
 	    },
 
-	    dispatch(type, data) { 
-	    	var result = null;
+	    select() {
 
+	    }
+
+	    dispatch(type, data = {}) { 
 	    	if (_actions[type]) {
-	    		result = Promise.resolve(_actions[type](_state, data));
+	    		store.dispatch({ type, ...data });
 	    	}
 	    	else {
 	    		console.warn(`Action ${type} does not exist`);
 	    	}
 
-	    	if (_subscribers[type] && result) {
+	    	if (_subscribers[type]) {
 	    		_subscribers[type].forEach(subscriber => {
-	    			result.then(subscriber.update).catch(error => console.error(error));
+	    			
 	    		});
 	    	}
 	    },

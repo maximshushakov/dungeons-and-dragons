@@ -21,6 +21,8 @@ class Question extends Component {
             window.responsiveVoice.speak(this.data[current].word, 'Japanese Female');
         });*/
 
+        //window.responsiveVoice.speak(this.data[current].word, 'Japanese Female');
+
         window.addEventListener('keypress', (e) => {
             if (e.code !== 'Enter') return;
             if (status === '-default') {
@@ -55,7 +57,7 @@ class Question extends Component {
                     <div class="_subheading" data-bind="text:hint"></div>
                     <div class="_description" data-bind="text:words"></div>
                     <div class="_textfield">
-                        <input data-bind="disabled:isDisable" data-bind-value="answer" data-on="change:check" ref='input' class="_textbox" placeholder="Your answer...">
+                        <input data-bind="value:answer" data-on="change:check" ref='input' class="_textbox" placeholder="Your answer...">
                     </div>
                 </div>
             </div>`
