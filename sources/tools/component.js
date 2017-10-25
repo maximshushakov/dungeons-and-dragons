@@ -5,24 +5,9 @@ class Component {
         this.data = data;
         this.element = Component.render(this.render(), { data: this.data });
         this.bindings = new Binder(this.element, this.data, this);
-        this.events = {};
         this.components = {};
 
         if (data['key'] !== undefined) this.element.dataset.key = data['key'];
-
-        Array.from(this.element.querySelectorAll('[data-on]')).forEach(element => {
-            const [ event, func ] = element.dataset.on.split(':');
-            if (!this.events[event]) this.events[event] = [];
-            this.events[event].push({ event, element, func });
-        });
-
-        this.handler = (e) => {
-            this.events[e.type].forEach(event => { console.log(event.element === e.target) });
-        };
-
-        Object.keys(this.events).forEach(event => {
-            this.element.children[0].addEventListener(event, this.handler);
-        });
 
         this.init();
     }
@@ -65,7 +50,7 @@ class Component {
     }
 
     destroy() {
-
+        this.bindings.destroy();
     }
 
     add(element, ...components) {

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/js";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -150,7 +150,7 @@ exports.default = Helper;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(/*! ./_root.js */ 20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__root_js__ = __webpack_require__(/*! ./_root.js */ 19);
 
 
 /** Built-in value references. */
@@ -169,9 +169,9 @@ var Symbol = __WEBPACK_IMPORTED_MODULE_0__root_js__["a" /* default */].Symbol;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(/*! ./_baseGetTag.js */ 14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(/*! ./_getPrototype.js */ 16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(/*! ./isObjectLike.js */ 21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__baseGetTag_js__ = __webpack_require__(/*! ./_baseGetTag.js */ 13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getPrototype_js__ = __webpack_require__(/*! ./_getPrototype.js */ 15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__isObjectLike_js__ = __webpack_require__(/*! ./isObjectLike.js */ 20);
 
 
 
@@ -488,7 +488,7 @@ function compose() {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ActionTypes; });
 /* harmony export (immutable) */ __webpack_exports__["a"] = createStore;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(/*! lodash-es/isPlainObject */ 2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(/*! symbol-observable */ 28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(/*! symbol-observable */ 25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_symbol_observable__);
 
 
@@ -828,11 +828,11 @@ var _helper = __webpack_require__(/*! core/helper */ 0);
 
 var _helper2 = _interopRequireDefault(_helper);
 
-var _redux = __webpack_require__(/*! redux */ 25);
+var _redux = __webpack_require__(/*! redux */ 24);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-__webpack_require__(/*! scss/app.scss */ 27);
+__webpack_require__(/*! scss/app.scss */ 12);
 
 //if (NODE_ENV == 'development') require('scss/_debug.scss');
 
@@ -876,6 +876,7 @@ class CardAdd extends _component2.default {
 					const response = JSON.parse(xhr.responseText);
 					if (response.data && response.data[0]) {
 						this.bindings.setData({
+							word: response.data[0].japanese[0].word || response.data[0].japanese[0].reading,
 							reading: response.data[0].japanese[0].reading,
 							meaning: response.data[0].senses[0].english_definitions.join('; '),
 							partOfSpeech: response.data[0].senses[0].parts_of_speech[0]
@@ -1457,84 +1458,15 @@ exports.default = Component;
 /* 12 */
 /* no static exports found */
 /* all exports used */
-/*!**********************************************************************************!*\
-  !*** ./~/css-loader?sourceMap!./~/sass-loader?sourceMap!./sources/scss/app.scss ***!
-  \**********************************************************************************/
-/***/ (function(module, exports, __webpack_require__) {
+/*!*******************************!*\
+  !*** ./sources/scss/app.scss ***!
+  \*******************************/
+/***/ (function(module, exports) {
 
-exports = module.exports = __webpack_require__(/*! ../../~/css-loader/lib/css-base.js */ 13)();
-// imports
-
-
-// module
-exports.push([module.i, "@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content, .card ._button {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 12px 16px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n    .card ._content.-saving {\n      position: relative; }\n      .card ._content.-saving::before {\n        content: 'saving...';\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        margin-left: -41px;\n        animation: saving .6s;\n        animation-iteration-count: infinite; }\n      .card ._content.-saving ._textbox, .card ._content.-saving ._button {\n        visibility: hidden; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '\\25B6';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n  .card ._actions {\n    padding: 32px 0 0; }\n  .card ._button {\n    border: none;\n    padding: 6px 12px;\n    color: #fff;\n    background: #00bcd4; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  min-height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  min-height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n", "", {"version":3,"sources":["/Users/maxim/projects/cards/sources/scss/app.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_typography.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_colors.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/animations.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/viewport.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/schemes/_metrics.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/card.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/material/components/toolbar.scss","/Users/maxim/projects/cards/sources/scss/sources/scss/app.scss"],"names":[],"mappings":"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","file":"app.scss","sourcesContent":["@charset \"UTF-8\";\n.card ._header {\n  font-size: 45px;\n  line-height: 63px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._headline {\n  font-size: 24px;\n  line-height: 34px;\n  color: black; }\n\n.card ._subheading {\n  font-size: 16px;\n  line-height: 24px;\n  color: black; }\n\n.card ._caption {\n  font-size: 13px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.54); }\n\n.card ._content, .card ._button {\n  font-size: 15px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n.card ._textbox {\n  font-size: 14px;\n  line-height: 24px;\n  color: rgba(0, 0, 0, 0.87); }\n\n@keyframes fade {\n  from {\n    opacity: 0; }\n  to {\n    opacity: 1; } }\n\n@keyframes rotate {\n  to {\n    transform: rotate(360deg); } }\n\n@keyframes dash {\n  0% {\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0; }\n  50% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -35px; }\n  100% {\n    stroke-dasharray: 89, 200;\n    stroke-dashoffset: -124px; } }\n\n.viewport {\n  position: relative;\n  top: 56px;\n  height: calc(100% - 56px);\n  overflow: auto; }\n  .viewport::before {\n    content: \"\";\n    display: none;\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background: #FAFAFA;\n    z-index: 1; }\n\n.viewport.-state-loading::before,\n.viewport.-state-loading ~ .viewport-icons.-preloader {\n  display: block;\n  /* animation: fade .4s; */ }\n\n.viewport-icons {\n  display: none; }\n\n.viewport-icons.-preloader {\n  position: fixed;\n  top: calc(50% - 25px);\n  left: calc(50% - 25px);\n  width: 50px;\n  height: 50px;\n  color: #00bcd4;\n  transform-origin: center center;\n  animation: rotate 1.5s linear infinite;\n  z-index: 1; }\n  .viewport-icons.-preloader circle {\n    fill: none;\n    stroke-width: 2;\n    stroke-miterlimi: 10;\n    stroke-dasharray: 1, 200;\n    stroke-dashoffset: 0;\n    stroke-linecap: round;\n    animation: dash 1.5s ease-in-out infinite; }\n\n.card {\n  max-width: 464px;\n  background: #fff;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.26);\n  border-radius: 2px;\n  margin: 8px; }\n  .card ._header {\n    padding: 12px 16px; }\n  .card ._content {\n    padding: 16px 16px 24px; }\n    .card ._content ol {\n      margin-left: 20px; }\n    .card ._content i {\n      font-size: 11px; }\n    .card ._content.-saving {\n      position: relative; }\n      .card ._content.-saving::before {\n        content: 'saving...';\n        position: absolute;\n        top: 50%;\n        left: 50%;\n        margin-left: -41px;\n        animation: saving .6s;\n        animation-iteration-count: infinite; }\n      .card ._content.-saving ._textbox, .card ._content.-saving ._button {\n        visibility: hidden; }\n  .card ._headline {\n    margin-bottom: 2px;\n    margin-top: -4px; }\n  .card ._subheading {\n    margin-bottom: 16px; }\n  .card ._textfield {\n    margin-top: 16px; }\n    .card ._textfield.-saving::before {\n      content: 'saving...';\n      position: absolute;\n      margin-left: 5px;\n      animation: saving .6s;\n      animation-iteration-count: infinite; }\n    .card ._textfield.-saving ._textbox {\n      visibility: hidden; }\n  .card ._textbox {\n    box-sizing: border-box;\n    width: 100%;\n    padding: 0 2px 4px;\n    margin-top: 16px;\n    border: none;\n    border-bottom: 2px solid rgba(0, 0, 0, 0.26);\n    appearance: none;\n    outline: none;\n    background: none;\n    transition: border-color .2s; }\n    .card ._textbox:focus {\n      border-color: #00bcd4; }\n  .card datalist {\n    border-color: rgba(0, 0, 0, 0.26); }\n  .card ._audio::before {\n    content: '▶';\n    display: inline-block;\n    font-size: 0.6em;\n    line-height: 1;\n    text-align: center;\n    width: 1.6em;\n    height: 1.6em;\n    border: 2px solid;\n    border-radius: 50%;\n    background: #FAFAFA;\n    color: #00bcd4;\n    margin-right: 0.5em;\n    box-sizing: border-box;\n    padding-top: 0.2em;\n    padding-left: 0.2em;\n    vertical-align: 0.2em; }\n  .card.-correct {\n    border-color: #388e3c; }\n  .card.-incorrect {\n    border-color: #F44336; }\n  .card ._actions {\n    padding: 32px 0 0; }\n  .card ._button {\n    border: none;\n    padding: 6px 12px;\n    color: #fff;\n    background: #00bcd4; }\n\n@media (min-width: 465px) {\n  .card {\n    display: block;\n    margin: 8px auto; } }\n\n@keyframes saving {\n  0% {\n    content: 'saving'; }\n  25% {\n    content: 'saving.'; }\n  50% {\n    content: 'saving..'; }\n  75% {\n    content: 'saving...'; } }\n\n.toolbar {\n  min-height: 56px;\n  padding: 0 16px;\n  background-color: #00bcd4;\n  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.26); }\n  .toolbar ._title {\n    color: white;\n    font-size: 20px;\n    line-height: 52px; }\n\n.toolbar.-fixed {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: 1000;\n  width: 100%; }\n\nhtml {\n  height: 100%; }\n\nbody {\n  background-color: #FAFAFA;\n  -webkit-font-smoothing: antialiased;\n  font-family: \"Noto Sans\", Roboto, serif;\n  min-height: 100%;\n  margin: 0; }\n  body * {\n    margin: 0;\n    padding: 0; }\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */\n","%typography-header {\n    font-size: 45px;\n    line-height: 63px;\n    color: $colors-text-main;\n}\n\n%typography-headline {\n    font-size: 24px;\n    line-height: 34px;\n    color: $colors-text-accent;\n}\n\n%typography-subheading {\n    font-size: 16px;\n    line-height: 24px;\n    color: $colors-text-accent;\n}\n\n%typography-caption {\n    font-size: 13px;\n    line-height: 24px;\n    color: $colors-text-caption;\n}\n\n%typography-body {\n    font-size: 15px;\n    line-height: 24px;\n    color: $colors-text-main;\n}\n\n%typography-input {\n    font-size: 14px;\n    line-height: 24px;\n    color: $colors-text-main;\n}","// Main\n$colors-primary: #00bcd4; //#b71c1c;\n$colors-accent: #d50000;\n$colors-background: #FAFAFA;\n\n$colors-success: #388e3c;\n$colors-error: #F44336;\n\n// Text colors\n$colors-text-main: rgba(#000, .87);\n$colors-text-accent: rgba(#000, 1);\n$colors-text-inactive: rgba(#000, .38);\n\n$colors-text-caption: rgba(#000, .54);\n$colors-text-header: rgba(#fff, 1);\n\n// Divider\n$colors-divider: rgba(#000, .38);\n\n// Shadows\n$colors-shadow: rgba(#000, .26);","@keyframes fade {\n\tfrom { opacity: 0; }\n\tto   { opacity: 1; }\n}\n\n@keyframes rotate {\n\tto  { transform: rotate(360deg); }\n}\n\n@keyframes dash {\n\t0% {\n\t\tstroke-dasharray: 1, 200;\n\t\tstroke-dashoffset: 0;\n\t}\n\t50% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -35px;\n\t}\n\t100% {\n\t\tstroke-dasharray: 89, 200;\n\t\tstroke-dashoffset: -124px;\n\t}\n}","%viewport-animation-fade-out {\n    animation: fade .4s; \n    animation-direction: reverse; \n    animation-fill-mode: forwards; \n}\n\n.viewport {\n    position: relative;\n    top: $toolbar-height-portrait;\n    height: calc(100% - #{$toolbar-height-portrait});\n    overflow: auto;\n\n    &::before {\n        content: \"\";\n        display: none;\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: $colors-background;\n        z-index: 1;\n    }\n}\n\n.viewport.-state-loading {\n    &::before,\n    ~ .viewport-icons.-preloader {\n        display: block;\n        /* animation: fade .4s; */\n    }\n}\n\n\n.viewport-icons { display: none; }\n\n.viewport-icons.-preloader {\n    position: fixed;\n    top: calc(50% - 25px);\n    left: calc(50% - 25px);\n    width: 50px;\n    height: 50px;\n    color: $colors-primary;\n    transform-origin: center center;\n    animation: rotate 1.5s linear infinite;\n    z-index: 1;\n\n    circle {\n        fill: none;\n        stroke-width: 2; \n        stroke-miterlimi: 10;\n        stroke-dasharray: 1, 200;\n        stroke-dashoffset: 0;\n        stroke-linecap: round;\n        animation: dash 1.5s ease-in-out infinite;\n    }\n}","$toolbar-height-portrait: 56px;\n$toolbar-height-landscape: 48px;",".card {\n    max-width: 464px;\n    background: #fff;\n    box-shadow: 0 2px 4px $colors-shadow;\n    border-radius: 2px;\n    margin: 8px;\n    //border-left: 2px solid;\n\n    ._header {\n        @extend %typography-header;\n        padding: 12px 16px;\n        //padding: 24px 16px 12px;\n        //background: $colors-primary;\n    }\n\n    ._content {\n        @extend %typography-body;\n        padding: 16px 16px 24px;\n\n        ol { margin-left: 20px; }\n        i { font-size: 11px; }\n\n        &.-saving {\n            position: relative;\n            &::before { \n                content: 'saving...'; \n                position: absolute; \n                top: 50%;\n                left: 50%;\n                margin-left: -41px; \n                animation: saving .6s; \n                animation-iteration-count: infinite; \n            }\n\n            ._textbox, ._button {\n                visibility: hidden\n            }\n        }\n    }\n\n    ._headline {\n        @extend %typography-headline;\n        margin-bottom: 2px;\n        margin-top: -4px;\n    }\n\n    ._subheading {\n        @extend %typography-subheading;\n        margin-bottom: 16px;\n        //min-height: 48px;\n    }\n\n    ._caption {\n        @extend %typography-caption;\n    }\n\n    ._textfield {\n        margin-top: 16px;\n\n        &.-saving {\n            &::before { content: 'saving...'; position: absolute; margin-left: 5px; animation: saving .6s; animation-iteration-count: infinite; }\n            ._textbox { visibility: hidden; }\n        }\n    }\n\n    ._textbox {\n        @extend %typography-input;\n        box-sizing: border-box;\n        width: 100%;\n        padding: 0 2px 4px;\n        margin-top: 16px;\n        border: none;\n        border-bottom: 2px solid $colors-shadow;\n        appearance: none;\n        outline: none;\n        background: none;\n        transition: border-color .2s;\n\n        &:focus {\n            border-color: $colors-primary;\n        }\n    }\n\n    ._textbox[list]  {\n        \n    }\n\n    datalist { border-color: $colors-shadow; }\n\n    ._audio {\n        &::before {\n            content: '▶';\n            display: inline-block;\n            font-size: 0.6em;\n            line-height: 1;\n            text-align: center;\n            width: 1.6em;\n            height: 1.6em;\n            border: 2px solid;\n            border-radius: 50%;\n            background: $colors-background;\n            color: $colors-primary;\n            margin-right: 0.5em;\n            box-sizing: border-box;\n            padding-top: 0.2em;\n            padding-left: 0.2em;\n            vertical-align: 0.2em;\n        }\n    }\n\n    &.-correct {\n        border-color: $colors-success;\n    }\n\n    &.-incorrect {\n        border-color: $colors-error;\n    }\n\n    ._actions {\n        padding: 32px 0 0;\n    }\n\n    ._button {\n        @extend %typography-body;\n        border: none;\n        padding: 6px 12px;\n        color: #fff;\n        background: $colors-primary;\n    }\n}\n\n@media (min-width: 465px) {\n    .card {\n        display: block;\n        margin: 8px auto;\n    }\n}\n\n@keyframes saving {\n    0%  { content: 'saving' }\n    25% { content: 'saving.' }\n    50% { content: 'saving..' }\n    75% { content: 'saving...' }\n}",".toolbar {\n\tmin-height: $toolbar-height-portrait;\n\tpadding: 0 16px;\n\tbackground-color: $colors-primary;\n\tbox-shadow: 0 3px 6px $colors-shadow;\n\n\t._title {\n\t\tcolor: $colors-text-header; \n\t\tfont-size: 20px;\n\t\tline-height: 52px;\n\t}\n}\n\n.toolbar.-fixed {\n    position: fixed;\n    top: 0;\n    left: 0;\n    z-index: 1000;\n    width: 100%;\n}","@import \"material/schemes/colors\";\n@import \"material/schemes/typography\";\n@import \"material/schemes/metrics\";\n\n@import \"material/animations\";\n\n@import \"material/components/viewport\";\n@import \"material/components/card\";\n@import \"material/components/toolbar\";\n\n\n//\n// Main Styles\nhtml { height: 100%; }\nbody {\n    background-color: $colors-background;\n    -webkit-font-smoothing: antialiased;\n    font-family: \"Noto Sans\", Roboto, serif;\n    min-height: 100%;\n    margin: 0;\n\n    * {\n        margin: 0;\n        padding: 0;\n    }\n}\n\n/*input {\n    font-family: \"Noto Sans\", Roboto, serif;\n    font-size: 24px;\n    border: none;\n    margin-top: 5px;\n    -webkit-appearance: none;\n\n    &:focus {\n        outline: none;\n    }\n}\n\n .app {\n    max-width: 600px;\n    margin: auto;\n    -moz-user-select: none;\n    user-select: none;\n    position: relative;\n}\n\n.grid {\n    margin: 5px;\n    padding: 0;\n    list-style: none;\n    font-size: 0;\n}\n\n.grid__item {\n    display: inline-block;\n    width: 33.33333333%;\n    padding-top: 33.33333333%;\n    text-align: center;\n    position: relative;\n    transition: transform .4s;\n    background-color: #fff;\n\n    * {\n        pointer-events: none;\n    }\n\n    span {\n        border: 1px solid #03A9F4;\n        display: flex;\n        position: absolute;\n        top: 0;\n        bottom: 0;\n        left: 0;\n        right: 0;\n        margin: 5px;\n        padding: 10px;\n        font-size: 21px;\n        //font-size: 3vw;\n        justify-content: center;\n        align-items: center;\n    }\n\n    em {\n        font-style: normal;\n    }\n} */"],"sourceRoot":""}]);
-
-// exports
-
+// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 13 */
-/* no static exports found */
-/* all exports used */
-/*!**************************************!*\
-  !*** ./~/css-loader/lib/css-base.js ***!
-  \**************************************/
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function() {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		var result = [];
-		for(var i = 0; i < this.length; i++) {
-			var item = this[i];
-			if(item[2]) {
-				result.push("@media " + item[2] + "{" + item[1] + "}");
-			} else {
-				result.push(item[1]);
-			}
-		}
-		return result.join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-
-/***/ }),
-/* 14 */
 /* exports provided: default */
 /* exports used: default */
 /*!************************************!*\
@@ -1544,8 +1476,8 @@ module.exports = function() {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Symbol_js__ = __webpack_require__(/*! ./_Symbol.js */ 1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(/*! ./_getRawTag.js */ 17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(/*! ./_objectToString.js */ 18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__getRawTag_js__ = __webpack_require__(/*! ./_getRawTag.js */ 16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objectToString_js__ = __webpack_require__(/*! ./_objectToString.js */ 17);
 
 
 
@@ -1577,7 +1509,7 @@ function baseGetTag(value) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /* exports provided: default */
 /* exports used: default */
 /*!************************************!*\
@@ -1594,7 +1526,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(/*! ./../webpack/buildin/global.js */ 7)))
 
 /***/ }),
-/* 16 */
+/* 15 */
 /* exports provided: default */
 /* exports used: default */
 /*!**************************************!*\
@@ -1603,7 +1535,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(/*! ./_overArg.js */ 19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__overArg_js__ = __webpack_require__(/*! ./_overArg.js */ 18);
 
 
 /** Built-in value references. */
@@ -1613,7 +1545,7 @@ var getPrototype = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__overArg_js
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /* exports provided: default */
 /* exports used: default */
 /*!***********************************!*\
@@ -1672,7 +1604,7 @@ function getRawTag(value) {
 
 
 /***/ }),
-/* 18 */
+/* 17 */
 /* exports provided: default */
 /* exports used: default */
 /*!****************************************!*\
@@ -1706,7 +1638,7 @@ function objectToString(value) {
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /* exports provided: default */
 /* exports used: default */
 /*!*********************************!*\
@@ -1733,7 +1665,7 @@ function overArg(func, transform) {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /* exports provided: default */
 /* exports used: default */
 /*!******************************!*\
@@ -1742,7 +1674,7 @@ function overArg(func, transform) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(/*! ./_freeGlobal.js */ 15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__ = __webpack_require__(/*! ./_freeGlobal.js */ 14);
 
 
 /** Detect free variable `self`. */
@@ -1755,7 +1687,7 @@ var root = __WEBPACK_IMPORTED_MODULE_0__freeGlobal_js__["a" /* default */] || fr
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /* exports provided: default */
 /* exports used: default */
 /*!*************************************!*\
@@ -1796,7 +1728,7 @@ function isObjectLike(value) {
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /* exports provided: default */
 /* exports used: default */
 /*!***************************************!*\
@@ -1857,7 +1789,7 @@ function applyMiddleware() {
 }
 
 /***/ }),
-/* 23 */
+/* 22 */
 /* exports provided: default */
 /* exports used: default */
 /*!******************************************!*\
@@ -1916,7 +1848,7 @@ function bindActionCreators(actionCreators, dispatch) {
 }
 
 /***/ }),
-/* 24 */
+/* 23 */
 /* exports provided: default */
 /* exports used: default */
 /*!***************************************!*\
@@ -2062,7 +1994,7 @@ function combineReducers(reducers) {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ }),
-/* 25 */
+/* 24 */
 /* exports provided: createStore, combineReducers, bindActionCreators, applyMiddleware, compose */
 /* all exports used */
 /*!*****************************!*\
@@ -2073,9 +2005,9 @@ function combineReducers(reducers) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(/*! ./createStore */ 5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(/*! ./combineReducers */ 24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(/*! ./bindActionCreators */ 23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(/*! ./applyMiddleware */ 22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(/*! ./combineReducers */ 23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(/*! ./bindActionCreators */ 22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(/*! ./applyMiddleware */ 21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(/*! ./compose */ 4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(/*! ./utils/warning */ 6);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["a"]; });
@@ -2104,295 +2036,7 @@ if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ }),
-/* 26 */
-/* no static exports found */
-/* all exports used */
-/*!*************************************!*\
-  !*** ./~/style-loader/addStyles.js ***!
-  \*************************************/
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-var stylesInDom = {},
-	memoize = function(fn) {
-		var memo;
-		return function () {
-			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-			return memo;
-		};
-	},
-	isOldIE = memoize(function() {
-		return /msie [6-9]\b/.test(self.navigator.userAgent.toLowerCase());
-	}),
-	getHeadElement = memoize(function () {
-		return document.head || document.getElementsByTagName("head")[0];
-	}),
-	singletonElement = null,
-	singletonCounter = 0,
-	styleElementsInsertedAtTop = [];
-
-module.exports = function(list, options) {
-	if(typeof DEBUG !== "undefined" && DEBUG) {
-		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the bottom of <head>.
-	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-	var styles = listToStyles(list);
-	addStylesToDom(styles, options);
-
-	return function update(newList) {
-		var mayRemove = [];
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-		if(newList) {
-			var newStyles = listToStyles(newList);
-			addStylesToDom(newStyles, options);
-		}
-		for(var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-			if(domStyle.refs === 0) {
-				for(var j = 0; j < domStyle.parts.length; j++)
-					domStyle.parts[j]();
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-}
-
-function addStylesToDom(styles, options) {
-	for(var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-		if(domStyle) {
-			domStyle.refs++;
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles(list) {
-	var styles = [];
-	var newStyles = {};
-	for(var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-		if(!newStyles[id])
-			styles.push(newStyles[id] = {id: id, parts: [part]});
-		else
-			newStyles[id].parts.push(part);
-	}
-	return styles;
-}
-
-function insertStyleElement(options, styleElement) {
-	var head = getHeadElement();
-	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-	if (options.insertAt === "top") {
-		if(!lastStyleElementInsertedAtTop) {
-			head.insertBefore(styleElement, head.firstChild);
-		} else if(lastStyleElementInsertedAtTop.nextSibling) {
-			head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			head.appendChild(styleElement);
-		}
-		styleElementsInsertedAtTop.push(styleElement);
-	} else if (options.insertAt === "bottom") {
-		head.appendChild(styleElement);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement(styleElement) {
-	styleElement.parentNode.removeChild(styleElement);
-	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-	if(idx >= 0) {
-		styleElementsInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement(options) {
-	var styleElement = document.createElement("style");
-	styleElement.type = "text/css";
-	insertStyleElement(options, styleElement);
-	return styleElement;
-}
-
-function createLinkElement(options) {
-	var linkElement = document.createElement("link");
-	linkElement.rel = "stylesheet";
-	insertStyleElement(options, linkElement);
-	return linkElement;
-}
-
-function addStyle(obj, options) {
-	var styleElement, update, remove;
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-		styleElement = singletonElement || (singletonElement = createStyleElement(options));
-		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-	} else if(obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function") {
-		styleElement = createLinkElement(options);
-		update = updateLink.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-			if(styleElement.href)
-				URL.revokeObjectURL(styleElement.href);
-		};
-	} else {
-		styleElement = createStyleElement(options);
-		update = applyToTag.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle(newObj) {
-		if(newObj) {
-			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-				return;
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag(styleElement, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = styleElement.childNodes;
-		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-		if (childNodes.length) {
-			styleElement.insertBefore(cssNode, childNodes[index]);
-		} else {
-			styleElement.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag(styleElement, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		styleElement.setAttribute("media", media)
-	}
-
-	if(styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = css;
-	} else {
-		while(styleElement.firstChild) {
-			styleElement.removeChild(styleElement.firstChild);
-		}
-		styleElement.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink(linkElement, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	if(sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = linkElement.href;
-
-	linkElement.href = URL.createObjectURL(blob);
-
-	if(oldSrc)
-		URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
-/* 27 */
-/* no static exports found */
-/* all exports used */
-/*!*******************************!*\
-  !*** ./sources/scss/app.scss ***!
-  \*******************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !../../~/css-loader?sourceMap!../../~/sass-loader?sourceMap!./app.scss */ 12);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(/*! ../../~/style-loader/addStyles.js */ 26)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/css-loader/index.js?sourceMap!../../node_modules/sass-loader/index.js?sourceMap!./app.scss", function() {
-			var newContent = require("!!../../node_modules/css-loader/index.js?sourceMap!../../node_modules/sass-loader/index.js?sourceMap!./app.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 28 */
+/* 25 */
 /* no static exports found */
 /* exports used: default */
 /*!**************************************!*\
@@ -2400,11 +2044,11 @@ if(false) {
   \**************************************/
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! ./lib/index */ 29);
+module.exports = __webpack_require__(/*! ./lib/index */ 26);
 
 
 /***/ }),
-/* 29 */
+/* 26 */
 /* no static exports found */
 /* all exports used */
 /*!******************************************!*\
@@ -2419,7 +2063,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__(/*! ./ponyfill */ 30);
+var _ponyfill = __webpack_require__(/*! ./ponyfill */ 27);
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -2442,10 +2086,10 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../webpack/buildin/global.js */ 7), __webpack_require__(/*! ./../../webpack/buildin/module.js */ 31)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../webpack/buildin/global.js */ 7), __webpack_require__(/*! ./../../webpack/buildin/module.js */ 28)(module)))
 
 /***/ }),
-/* 30 */
+/* 27 */
 /* no static exports found */
 /* all exports used */
 /*!*********************************************!*\
@@ -2479,7 +2123,7 @@ function symbolObservablePonyfill(root) {
 };
 
 /***/ }),
-/* 31 */
+/* 28 */
 /* no static exports found */
 /* all exports used */
 /*!***********************************!*\
@@ -2512,7 +2156,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 32 */
+/* 29 */
 /* no static exports found */
 /* all exports used */
 /*!******************************!*\

@@ -4,6 +4,7 @@ class Binder {
         this.component = component;
     	this.data = data;
     	this.bindings = {};
+        this.events = {};
 
         Array.from(this.element.querySelectorAll('[data-bind]')).forEach(element => {
             const [ type, data ] = element.dataset.bind.split(':').map(item => item.trim());
@@ -11,7 +12,23 @@ class Binder {
             this.bindings[data].push({ type, element, previous: null });
         });
 
-        return this;
+        Array.from(this.element.querySelectorAll('[data-on]')).forEach(element => {
+            const [ event, callback ] = element.dataset.on.split(':');
+            if (!this.events[event]) this.events[event] = [];
+            this.events[event].push({ event, element, callback });
+        });
+
+        this.handler = (e) => {
+            this.events[e.type].forEach(event => { 
+                if (event.element === e.target && this.component[event.callback]) {
+                    this.component[event.callback].apply(this.component, e);
+                }
+            });
+        };
+
+        Object.keys(this.events).forEach(event => {
+            this.element.addEventListener(event, this.handler);
+        });
 
         //this.setData(this.data);
     }
@@ -43,20 +60,31 @@ class Binder {
     diff(type, previous, data) {
         if (!Array.isArray(previous)) previous = [];
         
-        if (type === '+')
+        if (type === '+') {
             return data.filter((item, index) => {
                 if (previous.indexOf(item) === -1) {
                     if (!item.key) item.key = String(index);
                     return true;
                 }
             });
-        if (type === '-')
+        }
+
+        if (type === '-') {
             return previous.filter((item, index) => {
                 if (data.indexOf(item) === -1) {
                     if (!item.key) item.key = String(index);
                     return true;
                 }
             });
+        }
+    }
+
+    distroy() {
+        Object.keys(this.events).forEach(event => {
+            this.element.removeEventListener(event, this.handler);
+        });
+        this.events = null;
+        this.bindings = null;
     }
     
 }

@@ -24,7 +24,7 @@ RestDB.get('words').then(data => {
 class CardAdd extends Component {
 	init() {
     	this.element.querySelector('._textbox').addEventListener('change', (e) => {
-    		const value = e.target.value.trim();
+    		const value = e.target.value.trim().toLowerCase();
     		if (!value) return;
 
 		    var cors_api_host = 'cors-anywhere.herokuapp.com';
@@ -49,6 +49,7 @@ class CardAdd extends Component {
 					const response = JSON.parse(xhr.responseText);
 					if (response.data && response.data[0]) {
 						this.bindings.setData({
+							word: response.data[0].japanese[0].word || response.data[0].japanese[0].reading,
 							reading: response.data[0].japanese[0].reading,
 							meaning: response.data[0].senses[0].english_definitions.join('; '),
 							partOfSpeech: response.data[0].senses[0].parts_of_speech[0],
@@ -63,8 +64,7 @@ class CardAdd extends Component {
     	this.element.querySelector('._button').addEventListener('click', this.save.bind(this));
 	}
 
-	save(e) {
-		e.preventDefault();
+	save() {
 		const word = this.element.querySelector('._textbox').value.trim();
 		const reading = this.element.querySelector('[data-bind="value:reading"]').value.trim();
 		const meaning = this.element.querySelector('[data-bind="value:meaning"]').value.trim();
@@ -88,7 +88,7 @@ class CardAdd extends Component {
 	
 	render() {
 		return (
-    		`<div class="card">
+    		`<div class="card" data-id="{{ _id }}">
                 <div class="_content" data-bind="class:state">
                     <div class="_headline">
                     	Adding a new word
@@ -104,7 +104,7 @@ class CardAdd extends Component {
                     	</div>
                     </div>
                     <div class="_actions">
-                    	<button class="_button">Save</button>
+                    	<button class="_button" data-on="click:save">Save</button>
                     </div>
                 </div>
             </div>`
@@ -207,16 +207,15 @@ class Card extends Component {
 
 const addCard =(state, action) => {
   	return Object.assign({}, state, { 
-  		cards: state.cards.concat(action.data), 
+  		cards: state.cards.concat(action.data)
 	});
 }
 
 const removeCard =(state, action) => {
   	return Object.assign({}, state, { 
-  		cards: [
-  			...state.cards.slice(0, action.id),
-    		...state.cards.slice(action.id + 1), 
-    	]
+  		cards: state.cards.filter(card => {
+  			return card.id !== action.data.id
+  		})
 	});
 }
 
