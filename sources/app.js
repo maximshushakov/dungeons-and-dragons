@@ -19,6 +19,7 @@ RestDB.get('words').then(data => {
 	const words = data;
 	words.forEach(data => _store.dispatch({ type: 'ADD_CARD', data }));
 	document.querySelector('.viewport').classList.remove('-state-loading');
+	console.log(words);
 });
 
 class CardAdd extends Component {
@@ -80,6 +81,8 @@ class CardAdd extends Component {
 					meaning: '',
 					partOfSpeech: '',
 				});
+
+				console.log('sdfsdfsdf')
 
 				_store.dispatch({ type: 'ADD_CARD', data: { word, reading, meaning, partOfSpeech } })
 			})
@@ -173,7 +176,7 @@ class Cards extends Component {
 class Card extends Component {
 	init() {
 		this.element.querySelector('._audio').addEventListener('click', () => {
-			responsiveVoice.speak(this.data.word, "Japanese Female");
+			//responsiveVoice.speak(this.data.word, "Japanese Female");
 		});
 	}
 
@@ -184,7 +187,8 @@ class Card extends Component {
                     <div class="_caption">{{ partOfSpeech }}</div>
                     <div class="_title">{{ word }}</div>
                 </div>
-                <div class="_content">
+				<div class="_content">
+					<div><audio controls src="https://cards-5d46.restdb.io/media/5ae55e7ca0db5702000050df">Audio</audio></div>
                     <div class="_headline _audio">{{ reading }}</div>
                     <!--<div class="_subheading">{{ meaning }}</div>-->
                     <div class="_description">

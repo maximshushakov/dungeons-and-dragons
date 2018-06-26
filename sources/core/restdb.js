@@ -2,7 +2,7 @@ import Helper from 'core/helper';
 
 class RestDB {
 
-	static get(type) {
+	static get(type) { //?referencedby=true
 		return Helper.ajax({ url: `https://cards-5d46.restdb.io/rest/${type}`, type: 'GET',  key: '58d3ba9881f530cf439b3079' });
 	}
 

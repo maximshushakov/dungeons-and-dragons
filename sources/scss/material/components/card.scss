@@ -129,6 +129,15 @@
     }
 }
 
+.card.-collection {
+    display: flex; justify-content: space-between;
+    ._content { color: rgba(#000, .7); padding-bottom: 16px; flex: 1 }
+    ._subheading { margin-bottom: 8px; font-size: 18px; }
+    ._label { writing-mode: vertical-rl; letter-spacing: .4em; font-size: 16px; padding: 16px 8px;
+        background:rgba(#29B6F6, .9); 
+        color:rgba(#fff, .8) !important; }
+}
+
 @media (min-width: 465px) {
     .card {
         display: block;
