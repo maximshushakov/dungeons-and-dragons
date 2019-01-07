@@ -1,0 +1,14 @@
+{
+    "short_name": "D&D 5e",
+    "name": "Dungeons and Dragons: The 5th Edition",
+    "icons": [
+      {
+        "src": "images/app-icon.png",
+        "sizes": "72x72 96x96 128x128 256x256 512x512"
+      }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ed1c24",
+    "background_color": "#fafafa"
+  }
