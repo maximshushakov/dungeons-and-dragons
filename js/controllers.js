@@ -1,10 +1,7 @@
-import { ClassDescription } from './components/pages/class.js';
-import { RaceDescription } from './components/pages/race.js';
-import { MonsterDescription } from './components/pages/monster.js';
 import { Icons } from './components/icons.js';
 import { List } from './components/list.js';
 
-const api = (location.protocol === 'https:') ? 
+const api = (location.protocol === 'https:') ?
 	'https://cors-anywhere.herokuapp.com/http://www.dnd5eapi.co/api' :
 	'http://www.dnd5eapi.co/api';
 
@@ -24,8 +21,11 @@ const Controllers = {
 	},
 
 	async showClass(id, app, icon) {
-		const data = await fetch(`${api}/classes/${id}`).then(response => response.json());
-		
+		const [data, module] = await Promise.all([
+			fetch(`${api}/classes/${id}`).then(response => response.json()),
+			import('./components/pages/class.js'),
+		]);
+
 		data.starting_equipment.url = `${api}/${data.starting_equipment.url.match(/api\/(.*)$/)[1]}`;
 		data.class_levels.url = `${api}/${data.class_levels.url.match(/api\/(.*)$/)[1]}`;
 		data.subclasses.forEach((item, index, subclasses) => {
@@ -34,90 +34,74 @@ const Controllers = {
 
 		if (data.spellcasting) data.spellcasting.url = `${api}/${data.spellcasting.url.match(/api\/(.*)$/)[1]}`;
 		if (icon) data.image = icon;
-		
+
 		app.state.title = `${title}: ${data.name}`;
-		return ClassDescription(data)
+		return module.default(data);
 	},
 
-	showMonsters(app) { 
-		return new Promise((resolve, reject) => { 
-			fetch(`${api}/monsters`).then(response => response.json()).then(data => {
-				const props = data.results.map(item => {
-					item.id = item.url.match(/.?(\d+)$/)[1];
-					item.url = `#monsters/${item.id}`;
-					return item;
-				});
-
-				app.state.title = `${title}: Monsters`;
-				resolve(List({ items: props, sort: true, group: true }));
-			})	
+	async showMonsters(app) {
+		const data = await fetch(`${api}/monsters`).then(response => response.json());
+		const props = data.results.map(item => {
+			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.url = `#monsters/${item.id}`;
+			return item;
 		});
+
+		app.state.title = `${title}: Monsters`;
+		return List({ items: props, sort: true, group: true });
 	},
 
-	showMonster(id, app) { 
-		return new Promise((resolve, reject) => { 
-			fetch(`${api}/monsters/${id}`).then(response => response.json()).then(data => {
-				app.state.title = `${title}: ${data.name}`;
-				resolve(MonsterDescription(data));
-			})	
-		});
+	async showMonster(id, app) {
+		const [data, module] = await Promise.all([
+			fetch(`${api}/monsters/${id}`).then(response => response.json()),
+			import('./components/pages/monster.js'),
+		]);
+
+		app.state.title = `${title}: ${data.name}`;
+		return module.default(data);
 	},
 
-	showRaces(app) { 
-		return new Promise((resolve, reject) => { 
-			fetch(`${api}/races`).then(response => response.json()).then(data => {
-				const props = data.results.map(item => {
-					item.id = item.url.match(/.?(\d+)$/)[1];
-					item.url = `#races/${item.id}`;
-					return item;
-				});
-
-				app.state.title = `${title}: Races`;
-				resolve(List({ items: props }));
-			})	
+	async showRaces(app) {
+		const data = await fetch(`${api}/races`).then(response => response.json())
+		const props = data.results.map(item => {
+			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.url = `#races/${item.id}`;
+			return item;
 		});
+
+		app.state.title = `${title}: Races`;
+		return List({ items: props });
 	},
 
-	showRace(id, app) { 
-		return new Promise((resolve, reject) => { 
-			Promise.all([
-				fetch(`${api}/ability-scores`),
-				fetch(`${api}/races/${id}`),
-			])
-			.then(responses => {
-				const data = responses.map(response => response.json());
-				return Promise.all(data);
-			})
-			.then(data => {
-				const [ abilities, props ] = data;
-				props.abilities = abilities.results;
-				props.image = `/images/races/${props.name.toLowerCase()}.png`;
+	async showRace(id, app) {
+		const [ abilities, props, module ] = await Promise.all([
+			fetch(`${api}/ability-scores`).then(response => response.json()),
+			fetch(`${api}/races/${id}`).then(response => response.json()),
+			import('./components/pages/race.js'),
+		]);
+		props.abilities = abilities.results;
+		props.image = `/images/races/${props.name.toLowerCase()}.png`;
 
-				if (props.subraces) {
-					props.subraces.forEach((item, index, subraces) => {
-						subraces[index].url = `${api}/${item.url.match(/api\/(.*)$/)[1]}`
-					});
-				}
+		if (props.subraces) {
+			props.subraces.forEach((item, index, subraces) => {
+				subraces[index].url = `${api}/${item.url.match(/api\/(.*)$/)[1]}`
+			});
+		}
 
-				app.state.title = `${title}: ${props.name}`;
-				resolve(RaceDescription(props));
-			})
-		});
+		app.state.title = `${title}: ${props.name}`;
+		return module.default(props);
 	},
 
-	showEquipment(app) {
-		return new Promise((resolve, reject) => { 
-			fetch(`${api}/equipment`).then(response => response.json()).then(data => {
-				const props = data.results.map(item => {
-					item.id = item.url.match(/.?(\d+)$/)[1];
-					item.url = null; //`#equipment/${item.id}`;
-					return item;
-				});
-
-				app.state.title = `${title}: Equipment`;
-				resolve(List({ items: data.results, sort: true, group: true }));
-			})	
+	async showEquipment(app) {
+		const data = await fetch(`${api}/equipment`).then(response => response.json())
+		const items = data.results.map(item => {
+			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.url = null; //`#equipment/${item.id}`;
+			return item;
 		});
+
+		app.state.title = `${title}: Equipment`;
+		return List({ items, sort: true, group: true });
 	}
 }
 

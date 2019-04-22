@@ -2,7 +2,7 @@ import { create } from '/js/tools.js';
 
 function Item(caption, content) {
 	if (!content) return null;
-	return create('div', { className: 'section_item' }, 
+	return create('div', { className: 'section_item' },
 		caption + ' ',
 		create('span', {}, content),
 	)
@@ -36,7 +36,7 @@ function Description(props) {
 	const element = (
 		create('div', { className: 'content' },
 			create('div', { className: 'content_header' },
-				create('div', { className: 'content_header-caption' }, 
+				create('div', { className: 'content_header-caption' },
 					create('h1', { className: 'content_header-title', textContent: props.name }),
 					create('div', { textContent: `${props.type}, ${props.alignment}` }),
 					create('div', { className: 'content_header-section' },
@@ -52,7 +52,7 @@ function Description(props) {
 				create('h2', { className: 'section_title' }, 'Saving Throws'),
 				create('p', {}, SavingThrows(props)),
 			),
-			create('section', { className: 'section' },	
+			create('section', { className: 'section' },
 				Item('Damage Resistances', props.damage_resistances),
 				Item('Damage Immunities', props.damage_immunities),
 				Item('Condition Immunities', props.condition_immunities),
@@ -65,7 +65,7 @@ function Description(props) {
 
 	if (props.actions) {
 		element.appendChild(
-			create('section', { className: 'section' },	
+			create('section', { className: 'section' },
 				create('h2', { className: 'section_title' }, 'Actions'),
 				...props.actions.map(action => Item(action.name, action.desc))
 			)
@@ -74,7 +74,7 @@ function Description(props) {
 
 	if (props.legendary_actions) {
 		element.appendChild(
-			create('section', { className: 'section' },	
+			create('section', { className: 'section' },
 				create('h2', { className: 'section_title' }, 'Legendary Actions'),
 				...props.legendary_actions.map(action => Item(action.name, action.desc))
 			)
@@ -84,4 +84,4 @@ function Description(props) {
 	return element;
 }
 
-export { Description as MonsterDescription }
+export default Description

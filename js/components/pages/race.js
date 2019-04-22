@@ -16,13 +16,13 @@ function Description(props) {
 	const element = (
 		create('div', { className: 'content' },
 			create('div', { className: 'content_header' },
-				create('div', { className: 'content_header-caption' }, 
+				create('div', { className: 'content_header-caption' },
 					create('h1', { className: 'content_header-title', textContent: props.name }),
 					create('div', { textContent: `Speed: ${props.speed}` }),
 					create('p', { className: 'section_title', textContent: 'Racial Traits' }),
 					create('div', { textContent: extract(props.traits) || 'none' }),
 				),
-				create('div', { className: 'content_header-image' }, 
+				create('div', { className: 'content_header-image' },
 					create('img', { src: props.image })
 				),
 			),
@@ -67,4 +67,4 @@ function Description(props) {
 	return element;
 }
 
-export { Description as RaceDescription }
+export default Description

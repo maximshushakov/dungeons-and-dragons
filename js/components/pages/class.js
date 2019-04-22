@@ -5,7 +5,7 @@ function Equipment(props) {
 	const elements = [];
 	const format = (name, quantity) => name += (quantity > 1) ? ' (' + quantity + ')' : '';
 	const equipments = props.starting_equipment.map(equipment => format(equipment.item.name, equipment.quantity)).join(', ');
-	
+
 	for (let i = 1; i <= props.choices_to_make; i++) {
 		const choice = props['choice_' + i];
 		if (!choice) continue;
@@ -17,7 +17,7 @@ function Equipment(props) {
 		elements.push(create('li', { className: 'section_list-item' }, options.join(', or, ')));
 	}
 
-	return create('div', null,  
+	return create('div', null,
 		create('p', { className: 'section_item'}, equipments),
 		create('div', {}, 'Choices to make:'),
 		create('ol', { className: 'section_list' }, ...elements )
@@ -26,13 +26,13 @@ function Equipment(props) {
 
 function Levels(props) {
 	return create('table', { className: 'section_table' },
-			create('tr', null, 
+			create('tr', null,
 				create('th', { textContent: 'Level' }),
 				create('th', { textContent: 'Bonus' }),
 				create('th', { textContent: 'Features' })
 		),
 		...props.map(data => {
-			return create('tr', null, 
+			return create('tr', null,
 				create('td', { textContent: data.level }),
 				create('td', { textContent: '+' + data.prof_bonus }),
 				create('td', { textContent: extract(data.features) || '-' })
@@ -52,7 +52,7 @@ function Subclasses(props) {
 function Spellcasting(props) {
 	return create('div', { className: 'section_list' },
 		...props.info.map(data => {
-			return create('div', null, 
+			return create('div', null,
 				create('h3', { className: 'section_subtitle',  textContent: data.name }),
 				create('div', { textContent: data.desc })
 			)
@@ -66,7 +66,7 @@ function Description(props) {
 	const choices = props.proficiency_choices.map(choices => {
 		const list = extract(choices.from);
 
-		return create('p', { 
+		return create('p', {
 			className: 'section_list',
 			textContent: `Choose ${choices.choose} from: ` + list
 		})
@@ -76,7 +76,7 @@ function Description(props) {
 		create('div', { className: 'content' },
 			create('div', { className: 'content_header' },
 				create('div', { className: 'content_header-icon' }, props.image),
-				create('div', { className: 'content_header-caption' }, 
+				create('div', { className: 'content_header-caption' },
 					create('h1', { className: 'content_header-title', textContent: props.name }),
 					create('div', { textContent: `Hit Die: ${props.hit_die}` })
 				)
@@ -116,4 +116,4 @@ function Description(props) {
 	return element;
 }
 
-export { Description as ClassDescription }
+export default Description
