@@ -5,7 +5,7 @@ import { Observable } from '/js/tools.js';
 import { Controllers } from '/js/controllers.js';
 
 
-const state = Observable({ 
+const state = Observable({
 	title: 'Dungeons & Dragons',
 	isModal: false, // view mode
 	isLoading: true, // for showing preloader
@@ -14,13 +14,13 @@ const state = Observable({
 
 const routes = {
 	'#classes/{0,1}$': Controllers.showClasses,
-	'#classes/(\\d+)': Controllers.showClass,
+	'#classes/(\\w+)': Controllers.showClass,
 	'#races/{0,1}$': Controllers.showRaces,
-	'#races/(\\d+)': Controllers.showRace,
+	'#races/([\\w-]+)': Controllers.showRace,
 	'#monsters/{0,1}$': Controllers.showMonsters,
-	'#monsters/(\\d+)': Controllers.showMonster,
+	'#monsters/([\\w-]+)': Controllers.showMonster,
 	'#equipment/{0,1}$': Controllers.showEquipment,
-	default: Controllers.showClasses 
+	default: Controllers.showClasses
 }
 
 const router = (route) => {
@@ -45,7 +45,7 @@ const App = {
 		this.container = document.querySelector('.app');
 		this.preloader = document.querySelector('.landing');
 
-		this.container.appendChild(Toolbar({ 
+		this.container.appendChild(Toolbar({
 			title: state.title,
 			isModal: state.isModal,
 			onMenuClick: () => state.isNavigationOpened = true,
@@ -83,23 +83,23 @@ const App = {
 	async changeState(controller, type = 'page', route = null, ...params) {
 		state.isLoading = true;
 		state.isNavigationOpened = false;
- 
+
 		try {
 			const component = await controller(this, ...params);
 			if (type === 'modal') history.replaceState({ scrollTop: window.pageYOffset }, state.title);
 			if (this.component) this.component.remove();
 			if (this.component && this.component.onunmount) this.component.onunmount();
 			if (route) history.pushState({ prev: location.hash, type }, state.title, route);
-			
+
 			this.component = component;
 			this.container.appendChild(component);
-			
+
 			if (type === 'page' && history.state && history.state.scrollTop) {
 				window.scroll(0, history.state.scrollTop);
 			} else {
 				window.scroll(0, 0);
 			}
-			
+
 			state.isModal = (type === 'modal') ? true : false;
 			state.isLoading = false;
 		} catch(err) {

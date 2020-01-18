@@ -15,7 +15,7 @@ const create = (tag, props, ...children) => {
 		}
 		element[prop] = props[prop]
 	})
-	
+
 	return element;
 }
 
@@ -23,7 +23,7 @@ const createIcon = (shape, props, ...children) => {
 	const element = document.createElementNS("http://www.w3.org/2000/svg", shape);
 	if (props) Object.keys(props).forEach(prop => element.setAttribute(prop, props[prop]));
 	if (children) children.forEach(child => element.appendChild(child));
-	
+
 	return element;
 }
 
@@ -103,11 +103,8 @@ const extract = (items) => {
 	}).join(', ')
 }
 
-const score = (types, scores) => types.reduce((output, type, index) => {
-	if (scores[index]) {
-		output.push(`${type.name} +${scores[index]}`)
-	}
-	return output;
-}, []).join(', ');
+const score = (scores) => {
+	return scores.map(score => `${score.name} +${score.bonus}`).join(', ');
+}
 
 export { create, createIcon, asyncrender, Observable, extract, score }

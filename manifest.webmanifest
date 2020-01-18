@@ -4,7 +4,8 @@
     "icons": [
       {
         "src": "images/app-icon.png",
-        "sizes": "72x72 96x96 128x128 256x256 512x512"
+        "sizes": "72x72 96x96 128x128 144x144 256x256 512x512",
+        "purpose": "maskable"
       }
     ],
     "start_url": "/",

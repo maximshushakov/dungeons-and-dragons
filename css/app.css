@@ -1,5 +1,5 @@
 :root {
-	--text-font: Noto, sans-serif;
+	--text-font: "Noto Sans JP", sans-serif;
 	--text-color: rgba(0, 0, 0, .87);
 	--text-main: 300 14px/24px var(--text-font);
 	--text-main-highlight: 400 14px/24px var(--text-font);
@@ -181,6 +181,13 @@ img.-loaded { opacity: 1; }
 		transform: translate3d(calc(-100% - 56px), 0, 0);
 		transition: transform .4s;
 	}
+		.navigation_drawer-header {
+    	background: #f6f6f6;
+    	box-shadow: 0 0 3px 0px #0002;
+			height: 70px;
+			padding: 8px 1px 16px;
+		}
+			.navigation_drawer-header img { object-fit: contain; width: 50%; }
 
 	.navigation_link { color: var(--text-color); text-decoration: none; display: block; padding: 16px; font-weight: 400; }
 	.navigation_link:active, .navigation_link:target { color: var(--primary-color) }

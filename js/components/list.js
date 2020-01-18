@@ -5,7 +5,7 @@ const Item = (url, title) => {
 		title,
 		create('div', { className: 'list_item-wave' }),
 	);
-	
+
 	if (url) {
 		item.dataset.url = url;
 		item.tabIndex = 0;
@@ -31,14 +31,14 @@ export function List(props) {
 		}, {});
 	}
 
-	const items = props.groups ? 
+	const items = props.groups ?
 		Object.keys(props.groups).map(key => Group(key, props.groups[key])) :
 		props.items.map(data => Item(data.url, data.name));
 
 	const events = () => {
 		return window.requestAnimationFrame(updateCaptions);
 	}
-	
+
 	const updateCaptions = () => {
 		const offset = element.offsetTop;
 		items.forEach(group => {
@@ -57,7 +57,7 @@ export function List(props) {
 	}
 
 	const element = (
-		create('div', { className: 'content list' }, 
+		create('div', { className: 'content list' },
 			...items
 		)
 	);

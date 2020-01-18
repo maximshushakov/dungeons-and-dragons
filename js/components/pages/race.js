@@ -1,14 +1,15 @@
 import { create, asyncrender, extract, score } from '/js/tools.js';
 
-function Subraces(abilities, name, props) {
-	if (!props) return create('div', { textContent: name });
+function Subrace(props) {
+	console.log(props);
+	// if (!props) return create('div', { textContent: props.name });
 
 	return create('div', { className: 'section_list' },
 		create('h3', { className: 'section_subtitle', textContent: props.name }),
-		create('div', { textContent: extract(props['starting_proficiencies:']) }),
-		create('div', { textContent: extract(props.racial_traits) }),
-		create('div', { textContent: score(abilities, props.ability_bonuses) }),
-		create('p', { className: 'section_list', textContent: props.desc })
+		// create('div', { textContent: extract(props['starting_proficiencies']) }),
+		// create('div', { textContent: extract(props['racial_traits']) }),
+		// create('div', { textContent: score(abilities, props.ability_bonuses) }),
+		// create('p', { className: 'section_list', textContent: props.desc })
 	)
 }
 
@@ -28,7 +29,7 @@ function Description(props) {
 			),
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Ability Score Increase' }),
-				create('p', { className: 'section_list' , textContent: score(props.abilities, props.ability_bonuses) }),
+				create('p', { className: 'section_list' , textContent: score(props.ability_bonuses) }),
 			),
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Alignment' }),
@@ -59,7 +60,7 @@ function Description(props) {
 		element.appendChild(
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Subraces' }),
-				...props.subraces.map(subrace => asyncrender(subrace.url, Subraces.bind(null, props.abilities, subrace.name)))
+				props.subraces.map(subrace => asyncrender(subrace.url, Subrace)) //.bind(null, props.abilities, subrace.name)))
 			),
 		)
 	}

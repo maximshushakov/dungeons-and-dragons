@@ -11,12 +11,11 @@ const Controllers = {
 	async showClasses(app) {
 		const data = await fetch(`${api}/classes`).then(response => response.json());
 		const props = data.results.map(item => {
-			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.id = item.index;
 			item.url = `#classes/${item.id}`;
 			return item;
 		});
-
-		app.state.title = title;
+		app.state.title = `Classes / ${title}`;
 		return Icons(props);
 	},
 
@@ -27,6 +26,7 @@ const Controllers = {
 		]);
 
 		data.starting_equipment.url = `${api}/${data.starting_equipment.url.match(/api\/(.*)$/)[1]}`;
+		data.starting_equipment.url = data.starting_equipment.url.replace('startingequipment', 'starting-equipment');
 		data.class_levels.url = `${api}/${data.class_levels.url.match(/api\/(.*)$/)[1]}`;
 		data.subclasses.forEach((item, index, subclasses) => {
 			subclasses[index].url = `${api}/${item.url.match(/api\/(.*)$/)[1]}`
@@ -35,19 +35,19 @@ const Controllers = {
 		if (data.spellcasting) data.spellcasting.url = `${api}/${data.spellcasting.url.match(/api\/(.*)$/)[1]}`;
 		if (icon) data.image = icon;
 
-		app.state.title = `${title}: ${data.name}`;
+		app.state.title = `${data.name} / Classes / ${title}`;
 		return module.default(data);
 	},
 
 	async showMonsters(app) {
 		const data = await fetch(`${api}/monsters`).then(response => response.json());
 		const props = data.results.map(item => {
-			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.id = item.url.match(/.?([\w-]+)$/)[1];
 			item.url = `#monsters/${item.id}`;
 			return item;
 		});
 
-		app.state.title = `${title}: Monsters`;
+		app.state.title = `Monsters / ${title}`;
 		return List({ items: props, sort: true, group: true });
 	},
 
@@ -57,29 +57,29 @@ const Controllers = {
 			import('./components/pages/monster.js'),
 		]);
 
-		app.state.title = `${title}: ${data.name}`;
+		app.state.title = `${data.name} / Monsters / ${title}`;
 		return module.default(data);
 	},
 
 	async showRaces(app) {
 		const data = await fetch(`${api}/races`).then(response => response.json())
 		const props = data.results.map(item => {
-			item.id = item.url.match(/.?(\d+)$/)[1];
+			item.id = item.index;
 			item.url = `#races/${item.id}`;
 			return item;
 		});
 
-		app.state.title = `${title}: Races`;
+		app.state.title = `Races / ${title}`;
 		return List({ items: props });
 	},
 
 	async showRace(id, app) {
-		const [ abilities, props, module ] = await Promise.all([
-			fetch(`${api}/ability-scores`).then(response => response.json()),
+		const [ props, module ] = await Promise.all([
+			// fetch(`${api}/ability-scores`).then(response => response.json()),
 			fetch(`${api}/races/${id}`).then(response => response.json()),
 			import('./components/pages/race.js'),
 		]);
-		props.abilities = abilities.results;
+		// props.abilities = abilities.results;
 		props.image = `/images/races/${props.name.toLowerCase()}.png`;
 
 		if (props.subraces) {
@@ -88,7 +88,7 @@ const Controllers = {
 			});
 		}
 
-		app.state.title = `${title}: ${props.name}`;
+		app.state.title = `${props.name} / ${title}`;
 		return module.default(props);
 	},
 
