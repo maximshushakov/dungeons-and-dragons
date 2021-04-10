@@ -32,8 +32,8 @@ npm install -g http-server
 http-server -S
 ```
 
-This PWA hosts on [mshushakov.github.io](https://mshushakov.github.io)  
-HTTP: [mshushakov.github.io](http://mshushakov.github.io)
+DEMO PWA: [mshushakov.github.io](https://mshushakov.github.io)  
+DEMO HTTP: [mshushakov.github.io](http://mshushakov.github.io)
 
 Helpers
 --------
