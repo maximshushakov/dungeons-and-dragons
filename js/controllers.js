@@ -100,7 +100,7 @@ const Controllers = {
 			return item;
 		});
 
-		app.state.title = `${title}: Equipment`;
+		app.state.title = `Equipment / ${title}`;
 		return List({ items, sort: true, group: true });
 	},
 
