@@ -25,14 +25,14 @@ const Controllers = {
 			import('./components/pages/class.js'),
 		]);
 
-		data.starting_equipment.url = `${api}/${data.starting_equipment.url.match(/api\/(.*)$/)[1]}`;
-		data.starting_equipment.url = data.starting_equipment.url.replace('startingequipment', 'starting-equipment');
-		data.class_levels.url = `${api}/${data.class_levels.url.match(/api\/(.*)$/)[1]}`;
+		data.starting_equipment.forEach((item, index, starting_equipment) => {
+			starting_equipment[index].equipment.url = `${api}/${item.equipment.url.match(/api\/(.*)$/)[1]}`
+		});
+
 		data.subclasses.forEach((item, index, subclasses) => {
 			subclasses[index].url = `${api}/${item.url.match(/api\/(.*)$/)[1]}`
 		});
 
-		if (data.spellcasting) data.spellcasting.url = `${api}/${data.spellcasting.url.match(/api\/(.*)$/)[1]}`;
 		if (icon) data.image = icon;
 
 		app.state.title = `${data.name} / Classes / ${title}`;
@@ -92,17 +92,27 @@ const Controllers = {
 		return module.default(props);
 	},
 
-	async showEquipment(app) {
+	async showEquipments(app) {
 		const data = await fetch(`${api}/equipment`).then(response => response.json())
 		const items = data.results.map(item => {
-			item.id = item.url.match(/.?(\d+)$/)[1];
-			item.url = null; //`#equipment/${item.id}`;
+			item.id = item.index;
+			item.url = `#equipment/${item.id}`;
 			return item;
 		});
 
 		app.state.title = `${title}: Equipment`;
 		return List({ items, sort: true, group: true });
-	}
+	},
+
+	async showEquipment(id, app) {
+		const [data, module] = await Promise.all([
+			fetch(`${api}/equipment/${id}`).then(response => response.json()),
+			import('./components/pages/equipment.js'),
+		]);
+
+		app.state.title = `${data.name} / Equipment / ${title}`;
+		return module.default(data);
+	},
 }
 
 export { Controllers }

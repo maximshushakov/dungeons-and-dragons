@@ -1,44 +1,25 @@
 import { create, asyncrender, extract } from '/js/tools.js';
 import { Icon } from '/js/components/icons.js';
 
-function Equipment(props) {
-	const elements = [];
-	const format = (name, quantity) => name += (quantity > 1) ? ' (' + quantity + ')' : '';
-	const equipments = props.starting_equipment.map(equipment => format(equipment.item.name, equipment.quantity)).join(', ');
+const format = (name, quantity) => name += (quantity > 1) ? ' (' + quantity + ')' : '';
 
-	for (let i = 1; i <= props.choices_to_make; i++) {
-		const choice = props['choice_' + i];
-		if (!choice) continue;
-		const options = choice.map((choices, index) => {
-			const oneFrom = (choices.from.length !== choices.choose) ? 'any from: ' : '';
-			const letter = (choice.length > 1) ? `(${String.fromCharCode(97 + index)}) ` : '';
-			return letter + oneFrom + choices.from.map(eq => format(eq.item.name, eq.quantity)).join(', ');
-		});
-		elements.push(create('li', { className: 'section_list-item' }, options.join(', or, ')));
+function Equipment(props) {
+	const element = create('section', null, create('span', {}, props.name))
+
+	if (props.equipment_category) {
+		element.appendChild(create('span', {}, ` (${props.equipment_category.name})`));
 	}
 
-	return create('div', null,
-		create('p', { className: 'section_item'}, equipments),
-		create('div', {}, 'Choices to make:'),
-		create('ol', { className: 'section_list' }, ...elements )
-	)
-}
+	if (props.damage) {
+		element.appendChild(create('span', {}, ` (Damage Dice: ${props.damage.damage_dice})`));
+	}
 
-function Levels(props) {
-	return create('table', { className: 'section_table' },
-			create('tr', null,
-				create('th', { textContent: 'Level' }),
-				create('th', { textContent: 'Bonus' }),
-				create('th', { textContent: 'Features' })
-		),
-		...props.map(data => {
-			return create('tr', null,
-				create('td', { textContent: data.level }),
-				create('td', { textContent: '+' + data.prof_bonus }),
-				create('td', { textContent: extract(data.features) || '-' })
-			)
-		})
-	)
+	if (props.contents) {
+		const equipments = props.contents.map(equipment => format(equipment.item.name, equipment.quantity)).join(', ')
+		element.appendChild(create('p', { className: 'section_item'}, equipments));
+	}
+
+	return element;
 }
 
 function Subclasses(props) {
@@ -90,14 +71,6 @@ function Description(props) {
 				create('p', { className: 'section_list' , textContent: extract(props.saving_throws) })
 			),
 			create('section', { className: 'section' },
-				create('h2', { className: 'section_title', textContent: 'Starting Equipment' }),
-				asyncrender( props.starting_equipment.url, Equipment )
-			),
-			create('section', { className: 'section' },
-				create('h2', { className: 'section_title', textContent: 'Levels' }),
-				asyncrender( props.class_levels.url.toLowerCase(), Levels )
-			),
-			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Subclasses' }),
 				...props.subclasses.map(subclass => asyncrender(subclass.url, Subclasses))
 			),
@@ -108,7 +81,16 @@ function Description(props) {
 		element.appendChild(
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Spellcasting' }),
-				asyncrender( props.spellcasting.url.toLowerCase(), Spellcasting )
+				Spellcasting(props.spellcasting)
+			)
+		)
+	}
+
+	if (props.starting_equipment.length) {
+		element.appendChild(
+			create('section', { className: 'section' },
+				create('h2', { className: 'section_title', textContent: 'Starting Equipment' }),
+				...props.starting_equipment.map(starting_equipment => asyncrender(starting_equipment.equipment.url, Equipment))
 			)
 		)
 	}

@@ -1,15 +1,12 @@
 import { create, asyncrender, extract, score } from '/js/tools.js';
 
 function Subrace(props) {
-	console.log(props);
-	// if (!props) return create('div', { textContent: props.name });
-
 	return create('div', { className: 'section_list' },
 		create('h3', { className: 'section_subtitle', textContent: props.name }),
-		// create('div', { textContent: extract(props['starting_proficiencies']) }),
-		// create('div', { textContent: extract(props['racial_traits']) }),
+		create('div', { textContent: extract(props['starting_proficiencies']) }),
+		create('div', { textContent: extract(props['racial_traits']) }),
 		// create('div', { textContent: score(abilities, props.ability_bonuses) }),
-		// create('p', { className: 'section_list', textContent: props.desc })
+		create('p', { className: 'section_list', textContent: props.desc })
 	)
 }
 
@@ -60,7 +57,7 @@ function Description(props) {
 		element.appendChild(
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Subraces' }),
-				props.subraces.map(subrace => asyncrender(subrace.url, Subrace)) //.bind(null, props.abilities, subrace.name)))
+				...props.subraces.map(subrace => asyncrender(subrace.url, Subrace))
 			),
 		)
 	}
