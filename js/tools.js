@@ -104,7 +104,7 @@ const extract = (items) => {
 }
 
 const score = (scores) => {
-	return scores.map(score => `${score.name} +${score.bonus}`).join(', ');
+	return scores.map(score => `${score.ability_score.name} +${score.bonus}`).join(', ');
 }
 
 export { create, createIcon, asyncrender, Observable, extract, score }

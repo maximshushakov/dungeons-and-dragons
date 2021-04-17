@@ -5,8 +5,7 @@ function Subrace(props) {
 		create('h3', { className: 'section_subtitle', textContent: props.name }),
 		create('div', { textContent: extract(props['starting_proficiencies']) }),
 		create('div', { textContent: extract(props['racial_traits']) }),
-		// create('div', { textContent: score(abilities, props.ability_bonuses) }),
-		create('div', { textContent: props.ability_bonuses.map(item => `${item.ability_score.name} +${item.bonus}`).join(', ') }),
+		create('div', { textContent: score(props.ability_bonuses) }),
 		create('p', { className: 'section_list', textContent: props.desc })
 	)
 }
@@ -27,11 +26,7 @@ function Description(props) {
 			),
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Ability Score Increase' }),
-				// create('p', { className: 'section_list' , textContent: score(props.ability_bonuses) }),
-				create('p', {
-					className: 'section_list' },
-					props.ability_bonuses.map(item => `${item.ability_score.name} +${item.bonus}`).join(', ')
-				)
+				create('p', { className: 'section_list' , textContent: score(props.ability_bonuses) }),
 			),
 			create('section', { className: 'section' },
 				create('h2', { className: 'section_title', textContent: 'Alignment' }),
