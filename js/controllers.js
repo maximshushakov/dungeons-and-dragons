@@ -1,9 +1,7 @@
 import { Icons } from './components/icons.js';
 import { List } from './components/list.js';
 
-const api = (location.protocol === 'https:') ?
-	'https://cors-anywhere.herokuapp.com/http://www.dnd5eapi.co/api' :
-	'http://www.dnd5eapi.co/api';
+const api = '//www.dnd5eapi.co/api';
 
 const title = 'Dungeons & Dragons';
 
