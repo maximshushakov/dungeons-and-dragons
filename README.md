@@ -1,7 +1,10 @@
 SPA and PWA based on http://www.dnd5eapi.co/
 =======
 
-Supports both _http_ and _https_.
+The goal of this project is to build a simple single page application without using any frontend framework. 
+This project started as a skill test during hiring process for a company and continued as an experement platform for testing new features of JavaScript.
+
+SPA supports both _http_ and _https_. Due to security resons PWA works only via _https_.
 
 Currently supports next routers:
 --------
@@ -12,6 +15,8 @@ Currently supports next routers:
 *	#races/:id - shows DND race description based on ID
 *	#monsters/ - shows DND monsters' list
 *	#monsters/:id - shows DND monster description based on ID
+*	#equipment/ - shows DND equipment' list
+*	#equipment/:id - shows DND equipment description based on ID
 
 Installation
 --------
