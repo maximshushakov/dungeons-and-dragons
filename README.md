@@ -1,10 +1,9 @@
 SPA and PWA based on http://www.dnd5eapi.co/
 =======
 
-The goal of this project is to build a simple single page application without using any frontend framework. 
-This project started as a skill test during hiring process for a company and continued as an experement platform for testing new features of JavaScript.
+The goal of this project is to build a simple single page application without using any frontend framework. This project started as a skill test during hiring process for a company and continued as an experiment platform for testing new features of JavaScript.
 
-SPA supports both _http_ and _https_. Due to security resons PWA works only via _https_.
+SPA supports both _http_ and _https_. Due to security reasons PWA works only via _https_.
 
 Currently supports next routers:
 --------
@@ -61,7 +60,7 @@ TODO
 *	~~Add back button in the toolbar~~
 *	~~Add preloaders between pages and inside of modal pages~~
 *	~~Add more pages (races, monsters)~~
-*	Add more pages (equipment, spells)
+*	Add more pages (~~equipment~~, spells)
 *	Add animation for class icons (similar to the icons animation on Google Play)
 
 
